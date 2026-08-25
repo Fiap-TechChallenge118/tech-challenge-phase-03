@@ -1,228 +1,192 @@
 # TODO — Geral do Time
 
-> Este arquivo cobre apenas: (a) o setup inicial que precede qualquer dev, (b) tarefas que dependem de mais de um dev ou exigem alinhamento do time, e (c) o checklist final de submissão.
-> As tarefas individuais de cada fase estão nos TODOs de cada dev — **não são duplicadas aqui**, apenas referenciadas.
+> Este arquivo cobre: (a) o setup inicial que precede qualquer dev, (b) decisões e sincronizações que envolvem mais de um dev, e (c) o checklist final de submissão.
+> As tarefas individuais de cada etapa estão nos TODOs de cada dev — não são duplicadas aqui, apenas referenciadas.
+> Arquitetura do projeto: **100% ECS + Fargate**. Inferência = ECS Fargate Service (FastAPI) atrás de ALB, baixando `model.onnx` do S3. Treino = ECS Fargate Task disparada pela DAG. Imagem única no ECR. Monitoramento = Prometheus + Grafana. Terraform único. Sem Lambda/API Gateway/CloudWatch.
+> Fonte de verdade dos requisitos: `.docs/content/tech-challenge.md`. Plano: `.docs/content/plan.md`.
 
 ---
 
 ## 1. Setup inicial (antes de qualquer dev começar)
 
-> Responsável: **Dev B (Matheus Santos)** — ver checklist completo em `TODO/dev-b-matheus-santos.md → FASE 0`
+> Responsável: **Dev A (Alexandre)** — ver `TODO/dev-a-alexandre.md → ETAPA 0`
 
-- [ ] **[Dev B]** FASE 0 concluída: repositório criado, estrutura de pastas, `requirements.txt`, `CONTRIBUTING.md` e README esqueleto no ar
-- [ ] **[Dev B]** Dev A e Dev C adicionados como colaboradores com permissão de `Write`
-- [ ] **[Dev B]** Comunicar ao Dev A e Dev C via canal do time que podem criar suas branches
+- [x] **[Dev A]** ETAPA 0 concluída: repositório criado, estrutura de pastas, `pyproject.toml`, `CONTRIBUTING.md` e README esqueleto no ar
+  - [x] Arquivos locais prontos: estrutura de pastas + `.gitkeep`, `pyproject.toml`, `.gitignore`, `.dockerignore`, `.env.example`, `CONTRIBUTING.md`, README esqueleto
+  - [x] GitHub: repo público criado, commit inicial, branch protection em `main`
+- [x] **[Dev A]** Dev B e Dev C adicionados como colaboradores com permissão `Write`
+- [x] **[Dev A]** Comunicar ao time que podem criar suas branches
 
-**Nenhuma outra fase pode começar antes deste item estar marcado.**
+**Nenhuma outra etapa pode começar antes deste item estar marcado.**
 
 ---
 
-## 2. Alinhamento do time — decisões a tomar antes de começar
+## 2. Alinhamento do time — decisões já tomadas e pendências
 
-> Estas decisões impactam múltiplas fases e múltiplos devs. Resolver em reunião ou sincronia antes do início.
+### 2.1 Arquitetura de deploy — DECIDIDA
+- [x] **100% ECS + Fargate** na AWS, provisionado via **Terraform**
+- [x] Inferência = ECS Fargate **Service** persistente atrás de **ALB**
+- [x] Treino = ECS Fargate **Task** efêmera disparada pela DAG
+- [x] Modelo **baixado do S3** no startup do serviço (não embutido na imagem)
+- [x] Imagem **única no ECR** (serve inferência e treino via override de comando)
+- [x] **Sem** Lambda, API Gateway ou CloudWatch dashboards
+- Dev A escreve a justificativa arquitetural no README (ETAPA 3); Dev B executa a infra (ETAPA 10) — devem ser coerentes.
 
-### 2.1 Provedor de nuvem para deploy (bloqueia FASE 2 e FASE 9)
+### 2.2 Instrumentação da API com `prometheus_client` (impacta ETAPA 8)
+- [ ] Definir quem escreve o código de métricas: **Dev A** adiciona `prometheus_client` em `app/main.py` durante a ETAPA 3, com **apoio do Dev B** na configuração do scrape na ETAPA 8
+- [ ] `/metrics` expõe dados no formato Prometheus **antes** de Dev B configurar o Prometheus
 
-- [ ] Definir qual serviço de deploy será usado (escolher 1):
-  - `[ ]` Google Cloud Run
-  - `[ ]` Azure Container Apps
-  - `[ ]` AWS App Runner
-  - `[ ]` Render
-- [ ] **Dev A** usa o serviço escolhido na análise arquitetural da FASE 2 (README)
-- [ ] **Dev B** usa o mesmo serviço na execução real da FASE 9
-
-### 2.2 Responsabilidade pela instrumentação da API com `prometheus_client` (bloqueia FASE 7)
-
-> O `plan.md` define FASE 7 como responsabilidade do Dev B com "apoio do Dev A". Definir quem escreve o quê:
-
-- [ ] Decidir: Dev A adiciona `prometheus_client` em `app/main.py` (durante FASE 2 ou FASE 4), ou Dev B adiciona ao iniciar a FASE 7?
-- [ ] Decisão registrada aqui: ______________________________________
-- [ ] Dev responsável notificado
-
-### 2.3 Classificador a usar no modelo (bloqueia FASE 1 e FASE 8)
-
-> `skl2onnx` tem compatibilidade variável com diferentes classificadores. Confirmar antes do Dev C escolher:
-
-- [ ] `LogisticRegression` — compatível com `skl2onnx` e `predict_proba` nativo ✅ (recomendado)
-- [ ] `LinearSVC` — requer `CalibratedClassifierCV` para `predict_proba` e pode ter problemas no export ONNX ⚠️
-- [ ] `RandomForestClassifier` — compatível, mas mais lento ⚠️
+### 2.3 Classificador do modelo (impacta ETAPA 2 e ETAPA 9)
+- [ ] **`LogisticRegression`** — recomendado (compatível com `skl2onnx` + `predict_proba` nativo) ✅
+- [ ] `LinearSVC` — requer `CalibratedClassifierCV` para `predict_proba` ⚠️
+- [ ] `RandomForestClassifier` — compatível, porém mais lento ⚠️
 - [ ] Decisão registrada aqui: ______________________________________
 
-### 2.4 Airflow: instalação local vs. arquivo no repositório (bloqueia FASE 6)
+### 2.4 Contrato das variáveis de ambiente do modelo (impacta ETAPA 3, 7 e 10)
+- [ ] Padronizar os nomes usados pela API, pela DAG e pelo Terraform:
+  - `MODEL_BUCKET` — bucket S3 dos artefatos
+  - `MODEL_KEY` — chave do artefato (ex.: `models/model.onnx`)
+  - `USE_ONNX` — `true`/`false`
+  - `AWS_REGION`
+- [ ] Nomes confirmados entre Dev A (API), Dev B (Terraform/ECS) e Dev C (DAG/treino)
 
-- [ ] Decidir se o repositório terá um `docker-compose.airflow.yml` dedicado para facilitar a reprodução pela banca
+### 2.5 Terraform state e custo AWS (impacta ETAPA 10)
+- [ ] Backend do state: S3 remoto (recomendado) vs local para a demo — decidir
+- [ ] Ciente de que ECS Service persistente + ALB geram **custo contínuo** — definir janela da demo e executar `terraform destroy` após a entrega
 - [ ] Decisão registrada aqui: ______________________________________
 
-### 2.5 Datas de entrega por fase
+### 2.6 Airflow: instalação local vs. arquivo no repositório (impacta ETAPA 7)
+- [ ] Decidir se haverá um `docker-compose.airflow.yml` dedicado para reprodução pela banca
+- [ ] Decisão registrada aqui: ______________________________________
 
-> O `plan.md` deixa as datas em aberto. Preencher abaixo:
-
-| Fase | Responsável | Data alvo de conclusão |
+### 2.7 Datas de entrega por etapa
+| Etapa | Responsável | Data alvo |
 |---|---|---|
-| FASE 0 | Dev B | ___/___/___ |
-| FASE 1 | Dev C | ___/___/___ |
-| FASE 2 | Dev A | ___/___/___ |
-| FASE 3 | Dev B | ___/___/___ |
-| FASE 4 | Dev A | ___/___/___ |
-| FASE 5 | Dev B | ___/___/___ |
-| FASE 6 | Dev C | ___/___/___ |
-| FASE 7 | Dev B | ___/___/___ |
-| FASE 8 | Dev C | ___/___/___ |
-| FASE 9 | Dev B | ___/___/___ |
-| FASE 10 | Dev A | ___/___/___ |
+| ETAPA 0 | Dev A | ___/___/___ |
+| ETAPA 1 | Dev C | ___/___/___ |
+| ETAPA 2 | Dev C | ___/___/___ |
+| ETAPA 3 | Dev A | ___/___/___ |
+| ETAPA 4 | Dev A | ___/___/___ |
+| ETAPA 5 | Dev B | ___/___/___ |
+| ETAPA 6 | Dev B | ___/___/___ |
+| ETAPA 7 | Dev C | ___/___/___ |
+| ETAPA 8 | Dev B | ___/___/___ |
+| ETAPA 9 | Dev C | ___/___/___ |
+| ETAPA 10 | Dev B | ___/___/___ |
+| ETAPA 11 | Dev A | ___/___/___ |
 
-- [ ] Tabela de datas preenchida e comunicada ao time
-- [ ] Data limite de submissão do Tech Challenge confirmada com a instituição: ___/___/___
-
-### 2.6 Configurações do board (pendências manuais do `plan.md`)
-
-- [ ] Atribuir os membros nos cards do board (arrastar avatares)
-- [ ] Renomear labels padrão para `FASE 0..10`, `TIME` e `FINALIZADO`
+- [ ] Tabela de datas preenchida e comunicada
+- [ ] Data limite de submissão confirmada com a instituição: ___/___/___
 
 ---
 
-## 3. Pontos de sincronização entre fases (checkpoints de alinhamento)
+## 3. Pontos de sincronização entre etapas
 
-> Momentos em que dois ou mais devs precisam sincronizar antes de a próxima fase começar.
+### Checkpoint A — após ETAPA 0, antes de ETAPA 1 e ETAPA 3
+- [ ] Dev A confirmou: repositório público, estrutura criada, `pyproject.toml` commitado
+- [ ] Dev C confirmou: consegue criar branch `etapa-1-eda`
+- [ ] Dev A prossegue para a ETAPA 3 (`etapa-3-api-fastapi`)
+- [ ] Dev B confirmou acesso ao repositório para as etapas de infra
 
-### Checkpoint A — após FASE 0 e antes de FASE 1 e FASE 2
+### Checkpoint B — após ETAPA 2 e ETAPA 3, antes de ETAPA 5
+- [ ] Dev C confirmou: `models/model.pkl` gerado; `src/train.py` funciona via CLI; artefato disponível para upload ao S3
+- [ ] Dev A confirmou: `app/main.py` com `/predict` e `/health` funcionando (com fallback mock)
+- [ ] Dev B pode prosseguir com o Dockerfile
 
-**Quem participa:** Dev B (entregou FASE 0) + Dev A e Dev C (vão começar)
-- [ ] Dev B confirmou: repositório público, estrutura criada, `requirements.txt` commitado
-- [ ] Dev A confirmou: consegue criar branch `fase-2-api-fastapi` e acessar o repositório
-- [ ] Dev C confirmou: consegue criar branch `fase-1-dataset-modelo-baseline` e acessar o repositório
+### Checkpoint C — após ETAPA 4, antes de ETAPA 6
+- [ ] Dev A confirmou: `pytest -v` 100% e `ruff check app/ src/` zero erros
+- [ ] Comandos comunicados ao Dev B: `ruff check app/ src/` e `pytest -v`
 
-### Checkpoint B — após FASE 1 e FASE 2 e antes de FASE 3
+### Checkpoint D — antes de ETAPA 8 (instrumentação)
+- [ ] Decisão 2.2 tomada; `/metrics` expondo dados antes de Dev B configurar o Prometheus
 
-**Quem participa:** Dev C (entregou FASE 1) + Dev A (entregou FASE 2) + Dev B (vai começar FASE 3)
-- [ ] Dev C confirmou: `models/model.pkl` gerado e disponível localmente; `src/train.py` funciona via CLI
-- [ ] Dev A confirmou: `app/main.py` com `/predict` e `/health` funcionando; PR mergeado em `main`
-- [ ] Dev B confirma que pode prosseguir com o Dockerfile
+### Checkpoint E — após ETAPA 5, antes de ETAPA 9 (benchmark comparativo)
+- [ ] `docs/latencia_baseline.md` (p50/p95/p99 do `.pkl`) disponível
+- [ ] Dev B e Dev C combinaram máquina/condições iguais para o benchmark ONNX
 
-### Checkpoint C — após FASE 4 e antes de FASE 5
+### Checkpoint F — infra pronta (ETAPA 10)
+- [ ] Contrato de env vars (2.4) confirmado antes do `terraform apply`
+- [ ] Dev C alinhou com Dev B a Task Definition de treino (imagem, comando, S3)
+- [ ] URL do ALB funcionando e comunicada ao Dev A para o README (ETAPA 11)
 
-**Quem participa:** Dev A (entregou FASE 4) + Dev B (vai começar FASE 5)
-- [ ] Dev A confirmou: `pytest -v` passa 100% e `ruff check app/ src/` retorna zero erros
-- [ ] Dev A comunicou a Dev B os comandos exatos a usar no workflow:
-  - Lint: `ruff check app/ src/`
-  - Testes: `pytest -v`
-
-### Checkpoint D — antes de FASE 7 (instrumentação da API)
-
-**Quem participa:** Dev A + Dev B
-- [ ] Decisão 2.2 foi tomada (quem escreve a instrumentação prometheus)
-- [ ] `/metrics` está exposto e retornando dados no formato Prometheus antes de Dev B configurar o Prometheus
-
-### Checkpoint E — após FASE 3 e antes de FASE 8 (benchmark comparativo)
-
-**Quem participa:** Dev C (vai executar FASE 8) + Dev B (apoiará a medição dentro do container)
-- [ ] `docs/latencia_baseline.md` com tabela p50/p95/p99 do modelo sklearn disponível (FASE 3)
-- [ ] Dev B e Dev C combinaram data e máquina para rodar o benchmark ONNX nas mesmas condições
-
-### Checkpoint F — revisão final antes de FASE 10
-
-**Quem participa:** todos os 3 devs
-- [ ] FASE 8 concluída: tabela comparativa sklearn vs ONNX pronta
-- [ ] FASE 9 concluída: URL pública funcionando
-- [ ] Dev A pode iniciar a consolidação do README e o vídeo STAR
+### Checkpoint G — revisão final antes de ETAPA 11
+- [ ] ETAPA 9 concluída: comparativo sklearn vs ONNX pronto
+- [ ] ETAPA 10 concluída: URL do ALB respondendo
+- [ ] Dev A inicia consolidação do README e vídeo STAR
 
 ---
 
 ## 4. Revisão dos entregáveis oficiais do PDF
 
-> Um membro do time (sugestão: Dev A) deve revisar cada entregável antes da submissão final. Marcar quando cada um estiver aceito pelo time.
+> Sugestão: Dev A revisa cada entregável antes da submissão.
 
 ### 📦 Entregável 1 — API funcional em Docker + decisão arquitetural no README
-**Cobre:** FASE 0 (Dev B) + FASE 2 (Dev A) + FASE 3 (Dev B)
-**Critérios de aceite:**
-- [ ] `POST /predict` dentro do container retorna `{classe, confianca, tempo_ms}`
-- [ ] `GET /health` retorna HTTP 200 dentro do container
-- [ ] Seção "Decisão Arquitetural" no README com análise batch vs real-time e justificativa do provedor
-- [ ] `docs/latencia_baseline.md` com tabela p50/p95/p99 commitada
+**Cobre:** ETAPA 0 (A) + ETAPA 3 (A) + ETAPA 5 (B)
+- [ ] `POST /predict` no container retorna `{classe, confianca, tempo_ms}`
+- [ ] `GET /health` retorna 200
+- [ ] Seção "Decisão Arquitetural" (batch vs real-time + justificativa ECS/ALB)
+- [ ] `docs/latencia_baseline.md` com tabela p50/p95/p99
 
-**Revisado e aceito por:** _____________ em ___/___/___
+### 📦 Entregável 2 — Workflow GitHub Actions + DAG Airflow
+**Cobre:** ETAPA 4 (A) + ETAPA 6 (B) + ETAPA 7 (C)
+- [ ] `ci.yml` com ≥2 jobs (lint + test) verdes + push da imagem para ECR
+- [ ] Badge no README
+- [ ] `dags/retrain_triagem_dag.py` presente
+- [ ] Print do grafo Airflow verde em `docs/dag_execucao.png`
 
----
+### 📦 Entregável 3 — Stack Docker Compose + dashboard Grafana
+**Cobre:** ETAPA 8 (B, apoio A)
+- [ ] `docker compose up` sobe API + Prometheus + Grafana sem passo manual
+- [ ] Dashboard com ≥3 painéis (o plano entrega 4) com dados reais
+- [ ] `monitoring/dashboard.json` versionado + print
 
-### 📦 Entregável 2 — Workflow GitHub Actions + DAG Airflow funcionando
-**Cobre:** FASE 4 (Dev A) + FASE 5 (Dev B) + FASE 6 (Dev C)
-**Critérios de aceite:**
-- [ ] `.github/workflows/ci.yml` com mínimo 2 jobs automatizados (lint + test) rodando verde
-- [ ] Badge de status no README apontando para o workflow
-- [ ] `dags/retrain_triagem_dag.py` presente no repositório
-- [ ] Print do grafo Airflow com todas as tasks verdes em `docs/dag_execucao.png`
-
-**Revisado e aceito por:** _____________ em ___/___/___
-
----
-
-### 📦 Entregável 3 — Stack completa via Docker Compose + dashboard Grafana
-**Cobre:** FASE 7 (Dev B com apoio Dev A)
-**Critérios de aceite:**
-- [ ] `docker compose up` sobe API + Prometheus + Grafana sem passo manual adicional
-- [ ] Dashboard com mínimo 3 painéis (o plano entrega 4) exibindo dados reais
-- [ ] `monitoring/dashboard.json` versionado no repositório
-- [ ] Print do dashboard com dados visíveis em `docs/`
-
-**Revisado e aceito por:** _____________ em ___/___/___
-
----
-
-### 📦 Entregável 4 — Modelo otimizado + comparativo de latência + vídeo STAR
-**Cobre:** FASE 1 (Dev C) + FASE 8 (Dev C) + FASE 9 (Dev B) + FASE 10 (Dev A)
-**Critérios de aceite:**
-- [ ] Classificador treinado com métricas (accuracy e F1) documentadas
-- [ ] `src/export_onnx.py` funcionando e `models/model.onnx` gerado sem erro
-- [ ] `docs/latencia_comparativo.md` com tabela comparativa sklearn vs ONNX
-- [ ] Vídeo STAR de até 5 minutos publicado e linkado no README
-- [ ] Link do vídeo testado em aba anônima
-
-**Revisado e aceito por:** _____________ em ___/___/___
+### 📦 Entregável 4 — Modelo otimizado + comparativo + vídeo STAR
+**Cobre:** ETAPA 2 (C) + ETAPA 9 (C) + ETAPA 10 (B) + ETAPA 11 (A)
+- [ ] Classificador treinado com métricas (accuracy, F1) documentadas
+- [ ] `models/model.onnx` gerado; paridade validada
+- [ ] `docs/latencia_comparativo.md` com tabela sklearn vs ONNX
+- [ ] Vídeo STAR ≤ 5 min publicado e linkado; testado em aba anônima
 
 ---
 
 ## 5. Checklist final de submissão
 
-> Executar na ordem abaixo apenas quando todos os 4 entregáveis estiverem aceitos.
-
 ### Repositório
-- [ ] Todos os PRs das fases mergeados em `main`
-- [ ] Repositório definido como **público** nas configurações do GitHub
-- [ ] Acessar o repositório em aba anônima e confirmar que está visível sem login
-- [ ] Confirmar que nenhum arquivo com segredos (`.env`, chaves, senhas) foi commitado:
+- [ ] Todos os PRs mergeados em `main`
+- [ ] Repositório **público**; acessível em aba anônima
+- [ ] Nenhum segredo commitado (`.env`, chaves AWS, `*.tfstate`):
   ```bash
-  git log --all --full-history -- "*.env" "*.key" "*secret*"
+  git log --all --full-history -- "*.env" "*.key" "*secret*" "*.tfstate"
   ```
 
 ### Código e execução
-- [ ] `docker compose up` sobe a stack completa do zero (testar em máquina limpa ou pasta nova)
+- [ ] `docker compose up` sobe a stack completa do zero
 - [ ] `pytest -v` passa 100% no repositório clonado do zero
-- [ ] `ruff check app/ src/` retorna zero erros
-- [ ] Workflow CI/CD está verde na branch `main` no momento da submissão
+- [ ] `ruff check app/ src/` zero erros
+- [ ] Workflow CI verde na `main`
+
+### Infra AWS
+- [ ] `terraform apply` provisiona a stack; URL do ALB respondendo
+- [ ] `terraform destroy` testado/planejado para após a demo (controle de custo)
 
 ### Documentação
-- [ ] README com todas as seções preenchidas (nenhuma seção vazia)
-- [ ] URL pública na seção "Deploy em Produção" do README
-- [ ] Todos os comandos do README testados copiando e colando em terminal limpo
-- [ ] `docs/latencia_baseline.md` e `docs/latencia_comparativo.md` presentes
-- [ ] `docs/dag_execucao.png` (print da DAG verde) presente
+- [ ] README com todas as seções preenchidas
+- [ ] URL do ALB na seção "Deploy em Produção"
+- [ ] Comandos do README testados em terminal limpo
+- [ ] `docs/latencia_baseline.md`, `docs/latencia_comparativo.md`, `docs/eda_resumo.md`, `docs/dag_execucao.png` presentes
 
 ### Vídeo
-- [ ] Vídeo com duração ≤ 5 minutos
-- [ ] Método STAR respeitado: Situation → Task → Action → Result
-- [ ] Link do vídeo inserido no README
-- [ ] Link testado em aba anônima — acesso sem login
+- [ ] ≤ 5 minutos, método STAR, link no README, testado em aba anônima
 
 ### Submissão
-- [ ] Confirmar o link/formulário de submissão com a instituição
-- [ ] Submeter o link do repositório GitHub no portal indicado
-- [ ] Confirmar recebimento da submissão
+- [ ] Link do repositório submetido no portal indicado
+- [ ] Recebimento confirmado
 
 ---
 
 ## ⚠️ Pontos em aberto — Time
-
-- [ ] **Plataforma do vídeo:** o PDF não especifica onde publicar o vídeo. Confirmar com a instituição se YouTube (não listado) é aceito ou se há portal específico.
-- [ ] **Dataset:** confirmar com Dev C qual dataset será usado e se o mapeamento para as 3 classes é viável antes de começar a FASE 1.
-- [ ] **Airflow na entrega:** o PDF pede evidência de execução da DAG (print do grafo verde), mas não especifica se a banca vai executar o Airflow. Confirmar se é necessário incluir um `docker-compose.airflow.yml` no repositório para reprodutibilidade.
-- [ ] **Limite de tamanho do texto na API:** não especificado no PDF. Decisão atual (Dev A): 5.000 caracteres. Validar se faz sentido para o contexto clínico.
+- [ ] **Plataforma do vídeo:** confirmar com a instituição se YouTube é aceito.
+- [ ] **Dataset:** confirmar com Dev C o dataset e a viabilidade do mapeamento para as 3 classes antes da ETAPA 1.
+- [ ] **Airflow na entrega:** confirmar se é necessário `docker-compose.airflow.yml` para reprodutibilidade pela banca.
+- [ ] **Limite de tamanho do texto na API:** decisão atual (Dev A): 5.000 caracteres — validar.
+- [ ] **Custo AWS:** definir janela da demo e responsável por rodar `terraform destroy` após a entrega.
