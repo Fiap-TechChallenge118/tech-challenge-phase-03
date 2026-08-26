@@ -105,6 +105,31 @@ docker compose up
 # Grafana → http://localhost:3000  (admin / admin)
 ```
 
+## Dataset
+
+O modelo é treinado com o **Medical Abstracts TC Corpus** — 14.438 resumos de artigos médicos em inglês, rotulados em 5 categorias de condições clínicas.
+
+| Atributo | Valor |
+|---|---|
+| Fonte | [Kaggle](https://www.kaggle.com/datasets/saharalaa/medical-abstracts-tc-corpus) · [GitHub](https://github.com/sebischair/Medical-Abstracts-TC-Corpus) · [HuggingFace](https://huggingface.co/datasets/TimSchopf/medical_abstracts) |
+| Total de amostras | 14.438 (11.550 treino / 2.888 teste) |
+| Coluna de entrada | `medical_abstract` (texto do resumo) |
+| Classes originais | 5 condições clínicas |
+| Classes do projeto | 3 (`normal` / `atenção` / `urgente`) |
+| Licença | Creative Commons |
+
+**Mapeamento das classes originais → urgência:**
+
+| Classe original | Urgência |
+|---|---|
+| General pathological conditions | `normal` |
+| Digestive system diseases | `normal` |
+| Nervous system diseases | `atenção` |
+| Neoplasms | `atenção` |
+| Cardiovascular diseases | `urgente` |
+
+Documentação completa, instruções de download e justificativa do mapeamento: [`docs/dataset.md`](docs/dataset.md).
+
 ## Resultados de Latência
 
 <!-- Preencher na ETAPA 9: tabela comparativa sklearn vs ONNX (docs/latencia_comparativo.md). -->
