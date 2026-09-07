@@ -1,0 +1,152 @@
+{
+  "dataset": "data/raw/medical_tc_train.csv",
+  "best_classifier": "logistic",
+  "random_state": 42,
+  "test_size": 0.2,
+  "per_classifier": {
+    "randomforest": {
+      "accuracy": 0.4857142857142857,
+      "macro_f1": 0.4404757366702981,
+      "weighted_f1": 0.47443259305615587,
+      "per_class": {
+        "neoplasms": {
+          "precision": 0.6382189239332097,
+          "recall": 0.6798418972332015,
+          "f1-score": 0.6583732057416268
+        },
+        "digestive system diseases": {
+          "precision": 0.3591549295774648,
+          "recall": 0.21338912133891214,
+          "f1-score": 0.2677165354330709
+        },
+        "nervous system diseases": {
+          "precision": 0.34104046242774566,
+          "recall": 0.19155844155844157,
+          "f1-score": 0.24532224532224534
+        },
+        "cardiovascular diseases": {
+          "precision": 0.5886939571150097,
+          "recall": 0.6188524590163934,
+          "f1-score": 0.6033966033966034
+        },
+        "general pathological conditions": {
+          "precision": 0.38812301166489926,
+          "recall": 0.4759427828348505,
+          "f1-score": 0.42757009345794394
+        }
+      },
+      "best_params": null,
+      "train_size": 9240,
+      "test_size": 2310
+    },
+    "linearsvc": {
+      "accuracy": 0.5952380952380952,
+      "macro_f1": 0.5937564716695735,
+      "weighted_f1": 0.5831161543356599,
+      "per_class": {
+        "neoplasms": {
+          "precision": 0.6800699300699301,
+          "recall": 0.7687747035573123,
+          "f1-score": 0.7217068645640075
+        },
+        "digestive system diseases": {
+          "precision": 0.4967532467532468,
+          "recall": 0.6401673640167364,
+          "f1-score": 0.5594149908592322
+        },
+        "nervous system diseases": {
+          "precision": 0.5098039215686274,
+          "recall": 0.5909090909090909,
+          "f1-score": 0.5473684210526316
+        },
+        "cardiovascular diseases": {
+          "precision": 0.6481802426343154,
+          "recall": 0.7663934426229508,
+          "f1-score": 0.7023474178403756
+        },
+        "general pathological conditions": {
+          "precision": 0.5584677419354839,
+          "recall": 0.3602080624187256,
+          "f1-score": 0.4379446640316206
+        }
+      },
+      "best_params": {
+        "clf__C": 0.1,
+        "clf__class_weight": "balanced"
+      },
+      "train_size": 9240,
+      "test_size": 2310
+    },
+    "logistic": {
+      "accuracy": 0.6073593073593073,
+      "macro_f1": 0.6086624266247391,
+      "weighted_f1": 0.5888130725313084,
+      "per_class": {
+        "neoplasms": {
+          "precision": 0.7070524412296564,
+          "recall": 0.7727272727272727,
+          "f1-score": 0.7384324834749764
+        },
+        "digestive system diseases": {
+          "precision": 0.5083798882681564,
+          "recall": 0.7615062761506276,
+          "f1-score": 0.609715242881072
+        },
+        "nervous system diseases": {
+          "precision": 0.4940898345153664,
+          "recall": 0.6785714285714286,
+          "f1-score": 0.5718194254445964
+        },
+        "cardiovascular diseases": {
+          "precision": 0.6490630323679727,
+          "recall": 0.7807377049180327,
+          "f1-score": 0.7088372093023256
+        },
+        "general pathological conditions": {
+          "precision": 0.6169665809768637,
+          "recall": 0.31209362808842656,
+          "f1-score": 0.41450777202072536
+        }
+      },
+      "best_params": {
+        "clf__C": 0.3,
+        "clf__class_weight": "balanced"
+      },
+      "train_size": 9240,
+      "test_size": 2310
+    }
+  },
+  "holdout_test": {
+    "file": "data/raw/medical_tc_test.csv",
+    "accuracy": 0.6035318559556787,
+    "macro_f1": 0.6045091593276303,
+    "weighted_f1": 0.5802902293122297,
+    "per_class": {
+      "neoplasms": {
+        "precision": 0.6836313617606602,
+        "recall": 0.7851500789889415,
+        "f1-score": 0.7308823529411764
+      },
+      "digestive system diseases": {
+        "precision": 0.48873873873873874,
+        "recall": 0.725752508361204,
+        "f1-score": 0.5841184387617766
+      },
+      "nervous system diseases": {
+        "precision": 0.525830258302583,
+        "recall": 0.7402597402597403,
+        "f1-score": 0.6148867313915858
+      },
+      "cardiovascular diseases": {
+        "precision": 0.6510344827586206,
+        "recall": 0.7737704918032787,
+        "f1-score": 0.7071161048689139
+      },
+      "general pathological conditions": {
+        "precision": 0.6044444444444445,
+        "recall": 0.28303850156087407,
+        "f1-score": 0.3855421686746988
+      }
+    }
+  }
+}

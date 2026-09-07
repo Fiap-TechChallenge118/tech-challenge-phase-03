@@ -15,6 +15,56 @@
      justificativa de ECS Fargate + ALB para inferência e ECS Task para treino,
      diagrama Client → ALB → ECS Fargate Service → model.onnx (do S3). -->
 
+## Modelo
+
+Classificador de texto (NLP) leve que categoriza o laudo médico em **5 condições**
+(`neoplasms`, `digestive system diseases`, `nervous system diseases`,
+`cardiovascular diseases`, `general pathological conditions`) — decisão de escopo
+acordada com o grupo em substituição ao mapeamento em 3 urgências, já que o dataset
+fornece o rótulo de condição nativamente.
+
+| Componente | Detalhe |
+|------------|---------|
+| Dataset | [Medical Abstracts TC Corpus](https://www.kaggle.com/datasets/saharalaa/medical-abstracts-tc-corpus) (Kaggle) |
+| Pipeline | `preprocess → TF-IDF → LogisticRegression` (scikit-learn, CPU) |
+| Artefato | `models/model.pkl` (pipeline completo, consumível pela API) |
+
+### Resultados (split de teste, 2.310 laudos)
+
+| Classificador | Acurácia | Macro-F1 |
+|---------------|---------:|---------:|
+| RandomForest (default) | 0.486 | 0.440 |
+| LinearSVC (C=0.1, balanced) | 0.595 | 0.594 |
+| **LogisticRegression (C=0.3, balanced)** | **0.607** | **0.609** |
+
+Métricas completas (F1 por classe, holdout oficial): `docs/metricas_modelo.txt` e
+`models/metrics.json`.
+
+### Treinar
+
+```bash
+pip install -e ".[dev]"
+python scripts/download_data.py            # baixa o dataset → data/raw/
+python src/train.py \
+    --data data/raw/medical_tc_train.csv \
+    --test-data data/raw/medical_tc_test.csv \
+    --model models/model.pkl \
+    --classifier all --test-size 0.2 --random-state 42
+```
+
+### Usar o modelo
+
+```python
+import sys, joblib
+
+sys.path.insert(0, "src")   # expõe o módulo `preprocess` usado pelo .pkl
+import preprocess           # noqa: F401  (necessário p/ joblib desserializar)
+
+pipe = joblib.load("models/model.pkl")
+label = pipe.predict(["patient presents with chest pain radiating to the left arm"])[0]
+print(label)  # 1..5 → condição médica
+```
+
 ## Pré-requisitos
 
 <!-- Python 3.11+, Docker, Docker Compose, Terraform, credenciais AWS. -->
