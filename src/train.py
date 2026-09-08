@@ -163,7 +163,10 @@ def train_and_evaluate(df, classifier_name, test_size, random_state):
 
 
 def evaluate_holdout(pipeline, csv_path):
-    """Evaluate the trained pipeline on an external holdout CSV (official test split)."""
+    """Evaluate the trained pipeline on an external holdout CSV.
+
+    Uses the official test split for final evaluation.
+    """
     df = pd.read_csv(csv_path).dropna(subset=[TEXT_COLUMN, LABEL_COLUMN])
     y_true = df[LABEL_COLUMN].astype(int)
     y_pred = pipeline.predict(df[TEXT_COLUMN])
@@ -197,7 +200,10 @@ def parse_args(argv):
         "--classifier",
         default="all",
         choices=ALL_CLASSIFIERS + ["all"],
-        help="Classifier(s) to run; 'all' compares all three and keeps the best by macro-F1.",
+        help=(
+            "Classifier(s) to run; 'all' compares all three "
+            "and keeps the best by macro-F1."
+        ),
     )
     p.add_argument("--test-size", type=float, default=0.2)
     p.add_argument("--random-state", type=int, default=42)
@@ -235,7 +241,10 @@ def main(argv=None) -> int:
         ),
     )
     best = results[best_name]
-    print(f"\nBest classifier: {best_name} (macro_f1={best['metrics']['macro_f1']:.4f})")
+    print(
+        f"\nBest classifier: {best_name} "
+        f"(macro_f1={best['metrics']['macro_f1']:.4f})"
+    )
 
     # Serialize the best full pipeline (preprocess + TF-IDF + classifier).
     model_path = Path(args.model)

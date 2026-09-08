@@ -97,7 +97,9 @@ app = FastAPI(
     "/predict",
     response_model=PredictResponse,
     summary="Classifica um laudo médico",
-    response_description="Classe de urgência predita com confiança e tempo de inferência.",
+    response_description=(
+        "Classe de urgência predita com confiança e tempo de inferência."
+    ),
 )
 async def predict(request: PredictRequest) -> PredictResponse:
     """Recebe o texto de um laudo médico e retorna a classificação de urgência.
@@ -112,7 +114,9 @@ async def predict(request: PredictRequest) -> PredictResponse:
     # Dupla checagem pós-strip (o validator do schema já bloqueia, mas mantemos
     # a guarda aqui para clareza e cobertura em testes de integração)
     if not texto:
-        raise HTTPException(status_code=422, detail="O campo 'texto' não pode ser vazio.")
+        raise HTTPException(
+            status_code=422, detail="O campo 'texto' não pode ser vazio."
+        )
 
     t0 = time.perf_counter()
     try:
@@ -120,7 +124,9 @@ async def predict(request: PredictRequest) -> PredictResponse:
     except Exception as exc:
         ERRORS_TOTAL.inc()
         logger.exception("Erro durante a inferência: %s", exc)
-        raise HTTPException(status_code=500, detail="Erro interno durante a inferência.") from exc
+        raise HTTPException(
+            status_code=500, detail="Erro interno durante a inferência."
+        ) from exc
     finally:
         elapsed_ms = (time.perf_counter() - t0) * 1000
 

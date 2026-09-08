@@ -13,14 +13,18 @@ class PredictRequest(BaseModel):
         min_length=1,
         max_length=5000,
         description="Texto do laudo médico a ser classificado (máx. 5.000 caracteres).",
-        examples=["Paciente apresenta dor torácica intensa com irradiação para o braço esquerdo."],
+        examples=[
+            "Paciente apresenta dor torácica intensa com irradiação para o braço esquerdo."  # noqa: E501
+        ],
     )
 
     @field_validator("texto")
     @classmethod
     def texto_nao_pode_ser_branco(cls, v: str) -> str:
         if not v.strip():
-            raise ValueError("O campo 'texto' não pode ser vazio ou conter apenas espaços.")
+            raise ValueError(
+                "O campo 'texto' não pode ser vazio ou conter apenas espaços."
+            )
         return v
 
 
