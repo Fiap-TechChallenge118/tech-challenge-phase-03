@@ -30,7 +30,7 @@
 - [ ] Usuário não-root; `EXPOSE 8000`
 - [ ] `HEALTHCHECK` para `/health`
 - [ ] `CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]` (default = inferência)
-- [ ] `.dockerignore` exclui `data/`, `tests/`, `infra/`, `.git`, `.venv`
+- [ ] `.dockerignore` exclui `data/`, `tests/`, `infra/`, `.git`, `.venv` *(`.dockerignore` já existe e está correto)*
 
 #### Build e validação
 - [ ] `docker build -t triagem-api:latest .` + registrar tamanho da imagem
@@ -48,9 +48,9 @@
 - [ ] Commit: `feat(docker): add multi-stage Dockerfile and latency baseline`; PR → `main`
 
 ### ✅ Definition of Done — ETAPA 5
-- `docker build`/`run` sem erro, container não-root, `/health` e `/predict` respondendo
-- Tamanho da imagem registrado; `docs/latencia_baseline.md` com tabela e specs
-- PR aberto e revisado
+- `docker build`/`run` sem erro, container não-root, `/health` e `/predict` respondendo ⬜
+- Tamanho da imagem registrado; `docs/latencia_baseline.md` com tabela e specs ⬜
+- PR aberto e revisado ⬜
 
 ---
 ---
@@ -83,9 +83,9 @@
 - [ ] Commit: `ci: add GitHub Actions workflow (lint, test, build, push ECR)`; PR → `main`
 
 ### ✅ Definition of Done — ETAPA 6
-- 3 jobs (lint → test → build) verdes no Actions
-- Push para ECR funcionando na `main`
-- Badge no README; print salvo
+- 3 jobs (lint → test → build) verdes no Actions ⬜
+- Push para ECR funcionando na `main` ⬜
+- Badge no README; print salvo ⬜
 
 ---
 ---
@@ -105,8 +105,8 @@
 ### Checklist
 
 #### Instrumentação (com Dev A)
-- [ ] Confirmar `/metrics` exposto em `app/main.py` (Counter req com label `classe_predita`, Histogram latência, Counter erros)
-- [ ] `curl localhost:8000/metrics` retorna formato Prometheus
+- [x] Confirmar `/metrics` exposto em `app/main.py` (Counter req com label `classe_predita`, Histogram latência, Counter erros) — **já implementado**
+- [x] `curl localhost:8000/metrics` retorna formato Prometheus — **validado**
 
 #### Prometheus (`monitoring/prometheus.yml`)
 - [ ] `scrape_interval: 15s`; `job triagem-api` → target `api:8000`, `metrics_path: /metrics`
@@ -126,9 +126,9 @@
 - [ ] Commit: `feat(monitoring): add docker-compose with Prometheus and Grafana`; PR → `main`
 
 ### ✅ Definition of Done — ETAPA 8
-- `docker compose up` sobe os 3 serviços sem passo manual
-- `/metrics` em formato Prometheus; dashboard com 4 painéis com dados reais
-- `monitoring/dashboard.json` versionado; print salvo
+- `docker compose up` sobe os 3 serviços sem passo manual ⬜
+- `/metrics` em formato Prometheus ✅; dashboard com 4 painéis com dados reais ⬜
+- `monitoring/dashboard.json` versionado; print salvo ⬜
 
 ---
 ---
@@ -171,17 +171,17 @@
 - [ ] Commit: `feat(infra): add Terraform for ECS/Fargate, ALB, ECR, S3`; PR → `main`
 
 ### ✅ Definition of Done — ETAPA 10
-- `terraform apply` provisiona a stack sem erro
-- URL do ALB respondendo `/health`, `/docs`, `/predict`
-- ECS Service baixa o modelo do S3 e serve inferência
-- Nenhum segredo hardcoded; README com URL e deploy/rollback
-- PR aberto e revisado
+- `terraform apply` provisiona a stack sem erro ⬜
+- URL do ALB respondendo `/health`, `/docs`, `/predict` ⬜
+- ECS Service baixa o modelo do S3 e serve inferência ⬜
+- Nenhum segredo hardcoded; README com URL e deploy/rollback ⬜
+- PR aberto e revisado ⬜
 
 ---
 
 ## ⚠️ Pontos em aberto — Dev B
 - [ ] Backend do Terraform state: S3 remoto (recomendado) vs local para a demo — decidir
-- [ ] Nomes das variáveis de ambiente do modelo (`MODEL_BUCKET`/`MODEL_KEY`) — alinhar com Dev A (ETAPA 3)
+- [x] Nomes das variáveis de ambiente do modelo (`MODEL_BUCKET`/`MODEL_KEY`) — definidos e documentados no `.env.example` pelo Dev A
 - [ ] Task Definition de treino: comando e variáveis S3 — alinhar com Dev C (ETAPA 7)
 - [ ] Versões das imagens no Compose (`prometheus`/`grafana`): fixar vs `latest`
 - [ ] Custo AWS: ECS Service persistente + ALB geram custo contínuo — confirmar orçamento/janela da demo e destruir (`terraform destroy`) após a entrega
