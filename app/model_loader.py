@@ -1,15 +1,19 @@
 """Carregamento do modelo de triagem médica.
 
 Estratégia de inicialização (executada uma única vez no startup):
-  1. Tenta baixar o artefato do S3 (MODEL_BUCKET / MODEL_KEY).
-  2. Se USE_ONNX=true  → carrega com onnxruntime.InferenceSession.
-     Se USE_ONNX=false → carrega pipeline sklearn com joblib.
-  3. Se o S3 não estiver acessível ou o arquivo não existir, ativa o
-     fallback mock (retorna "normal" com confiança 1.0 para qualquer entrada).
+  1. Se MODEL_BUCKET estiver definido → baixa o artefato do S3 (MODEL_KEY).
+  2. Se MODEL_BUCKET não estiver definido → tenta carregar o artefato local
+     indicado por MODEL_PATH (padrão: "models/model.pkl" ou "models/model.onnx"
+     dependendo de USE_ONNX).
+  3. Se o arquivo local não existir → ativa o fallback mock (retorna "normal"
+     com confiança 1.0 para qualquer entrada).
 
 Variáveis de ambiente relevantes (ver .env.example):
-  MODEL_BUCKET  — bucket S3 onde o artefato está armazenado
-  MODEL_KEY     — chave do objeto  (ex.: models/model.onnx)
+  MODEL_BUCKET  — bucket S3 onde o artefato está armazenado (deixar vazio para
+                  usar o modelo local)
+  MODEL_KEY     — chave do objeto no S3  (ex.: models/model.onnx)
+  MODEL_PATH    — caminho local do artefato quando MODEL_BUCKET não está
+                  definido (ex.: models/model.pkl)
   USE_ONNX      — "true" | "false"
   AWS_REGION    — região do bucket
 """
@@ -17,6 +21,7 @@ Variáveis de ambiente relevantes (ver .env.example):
 import logging
 import os
 import tempfile
+from pathlib import Path
 from typing import Literal
 
 logger = logging.getLogger(__name__)
@@ -34,46 +39,16 @@ _model_type: str = "mock"  # "onnx" | "sklearn" | "mock"
 # ---------------------------------------------------------------------------
 
 def load_model() -> None:
-    """Baixa e carrega o modelo no startup. Ativa mock em caso de falha."""
+    """Carrega o modelo no startup. Ativa mock em último caso."""
     global _model, _model_type
 
-    use_onnx = os.getenv("USE_ONNX", "true").lower() == "true"
-    bucket = os.getenv("MODEL_BUCKET", "")
-    key = os.getenv("MODEL_KEY", "models/model.onnx")
-    region = os.getenv("AWS_REGION", "us-east-1")
+    use_onnx = os.getenv("USE_ONNX", "false").lower() == "true"
+    bucket = os.getenv("MODEL_BUCKET", "").strip()
 
-    if not bucket:
-        logger.warning(
-            "MODEL_BUCKET não configurado — ativando modo mock. "
-            "Defina MODEL_BUCKET para usar o modelo real."
-        )
-        _activate_mock()
-        return
-
-    suffix = ".onnx" if use_onnx else ".pkl"
-
-    try:
-        artifact_path = _download_from_s3(bucket, key, region, suffix)
-    except Exception as exc:
-        logger.warning(
-            "Falha ao baixar artefato do S3 (bucket=%s, key=%s): %s — "
-            "ativando modo mock.",
-            bucket, key, exc,
-        )
-        _activate_mock()
-        return
-
-    try:
-        if use_onnx:
-            _load_onnx(artifact_path)
-        else:
-            _load_sklearn(artifact_path)
-    except Exception as exc:
-        logger.warning(
-            "Falha ao carregar artefato (%s): %s — ativando modo mock.",
-            artifact_path, exc,
-        )
-        _activate_mock()
+    if bucket:
+        _load_from_s3(use_onnx, bucket)
+    else:
+        _load_from_local(use_onnx)
 
 
 def predict(texto: str) -> tuple[ClasseUrgencia, float]:
@@ -100,12 +75,77 @@ def model_status() -> str:
 
 
 # ---------------------------------------------------------------------------
-# Internos — download
+# Internos — estratégias de carregamento
+# ---------------------------------------------------------------------------
+
+def _load_from_s3(use_onnx: bool, bucket: str) -> None:
+    """Baixa o artefato do S3 e carrega o modelo."""
+    key = os.getenv("MODEL_KEY", "models/model.onnx")
+    region = os.getenv("AWS_REGION", "us-east-1")
+    suffix = ".onnx" if use_onnx else ".pkl"
+
+    try:
+        artifact_path = _download_from_s3(bucket, key, region, suffix)
+    except Exception as exc:
+        logger.warning(
+            "Falha ao baixar artefato do S3 (bucket=%s, key=%s): %s — "
+            "ativando modo mock.",
+            bucket, key, exc,
+        )
+        _activate_mock()
+        return
+
+    _load_artifact(artifact_path, use_onnx)
+
+
+def _load_from_local(use_onnx: bool) -> None:
+    """Carrega o artefato do sistema de arquivos local.
+
+    Resolução do caminho (em ordem de prioridade):
+      1. Variável MODEL_PATH, se definida.
+      2. models/model.onnx  se USE_ONNX=true.
+      3. models/model.pkl   se USE_ONNX=false.
+    """
+    default = "models/model.onnx" if use_onnx else "models/model.pkl"
+    model_path = Path(os.getenv("MODEL_PATH", default))
+
+    if not model_path.exists():
+        logger.warning(
+            "MODEL_BUCKET não configurado e arquivo local não encontrado: %s — "
+            "ativando modo mock.",
+            model_path,
+        )
+        _activate_mock()
+        return
+
+    logger.info(
+        "MODEL_BUCKET não configurado — carregando modelo local: %s", model_path
+    )
+    _load_artifact(str(model_path), use_onnx)
+
+
+def _load_artifact(path: str, use_onnx: bool) -> None:
+    """Carrega o artefato de acordo com o runtime escolhido."""
+    try:
+        if use_onnx:
+            _load_onnx(path)
+        else:
+            _load_sklearn(path)
+    except Exception as exc:
+        logger.warning(
+            "Falha ao carregar artefato (%s): %s — ativando modo mock.",
+            path, exc,
+        )
+        _activate_mock()
+
+
+# ---------------------------------------------------------------------------
+# Internos — download S3
 # ---------------------------------------------------------------------------
 
 def _download_from_s3(bucket: str, key: str, region: str, suffix: str) -> str:
     """Baixa o artefato do S3 para um arquivo temporário e retorna o caminho."""
-    import boto3  # importação local para não atrasar o módulo quando não usado
+    import boto3  # noqa: PLC0415
 
     s3 = boto3.client("s3", region_name=region)
     tmp = tempfile.NamedTemporaryFile(suffix=suffix, delete=False)
@@ -117,7 +157,7 @@ def _download_from_s3(bucket: str, key: str, region: str, suffix: str) -> str:
 
 
 # ---------------------------------------------------------------------------
-# Internos — carregamento
+# Internos — carregamento de artefato
 # ---------------------------------------------------------------------------
 
 def _load_onnx(path: str) -> None:
@@ -156,6 +196,16 @@ def _activate_mock() -> None:
 # Mapeamento índice → classe (deve ser coerente com o label encoder do treino)
 _CLASSES: list[ClasseUrgencia] = ["normal", "atenção", "urgente"]
 
+# Mapeamento condition_label (1–5) → classe de urgência
+# Fonte: data/raw/medical_tc_labels.csv + docs/dataset.md
+_CONDITION_TO_URGENCY: dict[str, ClasseUrgencia] = {
+    "1": "atenção",   # neoplasms
+    "2": "normal",    # digestive system diseases
+    "3": "atenção",   # nervous system diseases
+    "4": "urgente",   # cardiovascular diseases
+    "5": "normal",    # general pathological conditions
+}
+
 
 def _mock_predict() -> tuple[ClasseUrgencia, float]:
     return "normal", 1.0
@@ -192,14 +242,23 @@ def _predict_onnx(texto: str) -> tuple[ClasseUrgencia, float]:
 
 
 def _predict_sklearn(texto: str) -> tuple[ClasseUrgencia, float]:
-    """Executa inferência com pipeline sklearn."""
+    """Executa inferência com pipeline sklearn.
+
+    O modelo retorna condition_label (1–5). Aplicamos o mapeamento
+    _CONDITION_TO_URGENCY para converter para as 3 classes de urgência.
+    """
     import numpy as np  # noqa: PLC0415
 
-    classe = str(_model.predict([texto])[0])  # type: ignore[union-attr]
+    label_raw = str(_model.predict([texto])[0])  # type: ignore[union-attr]
     proba = _model.predict_proba([texto])[0]  # type: ignore[union-attr]
 
-    classes_list: list[str] = list(_model.classes_)  # type: ignore[union-attr]
-    idx = classes_list.index(classe) if classe in classes_list else 0
+    classes_list: list[str] = [str(c) for c in _model.classes_]  # type: ignore[union-attr]
+    idx = classes_list.index(label_raw) if label_raw in classes_list else 0
     confianca = float(np.max(proba)) if idx >= len(proba) else float(proba[idx])
 
-    return classe, confianca  # type: ignore[return-value]
+    # Converte condition_label → urgência (normal / atenção / urgente)
+    classe: ClasseUrgencia = _CONDITION_TO_URGENCY.get(
+        label_raw, "normal"  # type: ignore[arg-type]
+    )
+
+    return classe, confianca

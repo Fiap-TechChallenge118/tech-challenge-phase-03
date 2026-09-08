@@ -33,22 +33,21 @@
 - Dev A escreve a justificativa arquitetural no README (ETAPA 3); Dev B executa a infra (ETAPA 10) — devem ser coerentes.
 
 ### 2.2 Instrumentação da API com `prometheus_client` (impacta ETAPA 8)
-- [ ] Definir quem escreve o código de métricas: **Dev A** adiciona `prometheus_client` em `app/main.py` durante a ETAPA 3, com **apoio do Dev B** na configuração do scrape na ETAPA 8
-- [ ] `/metrics` expõe dados no formato Prometheus **antes** de Dev B configurar o Prometheus
+- [x] **Dev A** adicionou `prometheus_client` em `app/main.py`: Counter req (label `classe_predita`), Histogram latência, Counter erros
+- [x] `/metrics` expõe dados no formato Prometheus — validado com TestClient
 
 ### 2.3 Classificador do modelo (impacta ETAPA 2 e ETAPA 9)
-- [ ] **`LogisticRegression`** — recomendado (compatível com `skl2onnx` + `predict_proba` nativo) ✅
-- [ ] `LinearSVC` — requer `CalibratedClassifierCV` para `predict_proba` ⚠️
-- [ ] `RandomForestClassifier` — compatível, porém mais lento ⚠️
-- [ ] Decisão registrada aqui: ______________________________________
+- [x] **`LogisticRegression`** (C=0.3, class_weight=balanced) — **ESCOLHIDO**. Macro-F1=0.609, compatível com `skl2onnx` + `predict_proba` nativo ✅
+- Decisão registrada: `LogisticRegression` venceu comparativo entre RandomForest, LinearSVC e LogisticRegression em `models/metrics.json`
 
 ### 2.4 Contrato das variáveis de ambiente do modelo (impacta ETAPA 3, 7 e 10)
-- [ ] Padronizar os nomes usados pela API, pela DAG e pelo Terraform:
+- [x] Nomes padronizados e documentados no `.env.example`:
   - `MODEL_BUCKET` — bucket S3 dos artefatos
   - `MODEL_KEY` — chave do artefato (ex.: `models/model.onnx`)
+  - `MODEL_PATH` — caminho local quando `MODEL_BUCKET` não está definido
   - `USE_ONNX` — `true`/`false`
   - `AWS_REGION`
-- [ ] Nomes confirmados entre Dev A (API), Dev B (Terraform/ECS) e Dev C (DAG/treino)
+- [ ] Nomes confirmados entre Dev B (Terraform/ECS) e Dev C (DAG/treino)
 
 ### 2.5 Terraform state e custo AWS (impacta ETAPA 10)
 - [ ] Backend do state: S3 remoto (recomendado) vs local para a demo — decidir
@@ -62,10 +61,10 @@
 ### 2.7 Datas de entrega por etapa
 | Etapa | Responsável | Data alvo |
 |---|---|---|
-| ETAPA 0 | Dev A | ___/___/___ |
+| ETAPA 0 | Dev A | ✅ concluída |
 | ETAPA 1 | Dev C | ___/___/___ |
-| ETAPA 2 | Dev C | ___/___/___ |
-| ETAPA 3 | Dev A | ___/___/___ |
+| ETAPA 2 | Dev C | ✅ concluída |
+| ETAPA 3 | Dev A | ✅ concluída |
 | ETAPA 4 | Dev A | ___/___/___ |
 | ETAPA 5 | Dev B | ___/___/___ |
 | ETAPA 6 | Dev B | ___/___/___ |
@@ -83,29 +82,29 @@
 ## 3. Pontos de sincronização entre etapas
 
 ### Checkpoint A — após ETAPA 0, antes de ETAPA 1 e ETAPA 3
-- [ ] Dev A confirmou: repositório público, estrutura criada, `pyproject.toml` commitado
+- [x] Dev A confirmou: repositório público, estrutura criada, `pyproject.toml` commitado
 - [ ] Dev C confirmou: consegue criar branch `etapa-1-eda`
-- [ ] Dev A prossegue para a ETAPA 3 (`etapa-3-api-fastapi`)
+- [x] Dev A prosseguiu para a ETAPA 3 (`etapa-3-api-fastapi`) — concluída
 - [ ] Dev B confirmou acesso ao repositório para as etapas de infra
 
 ### Checkpoint B — após ETAPA 2 e ETAPA 3, antes de ETAPA 5
-- [ ] Dev C confirmou: `models/model.pkl` gerado; `src/train.py` funciona via CLI; artefato disponível para upload ao S3
-- [ ] Dev A confirmou: `app/main.py` com `/predict` e `/health` funcionando (com fallback mock)
-- [ ] Dev B pode prosseguir com o Dockerfile
+- [x] Dev C confirmou: `models/model.pkl` gerado; `src/train.py` funciona via CLI
+- [x] Dev A confirmou: `app/main.py` com `/predict` e `/health` funcionando (com fallback mock e modelo local)
+- [ ] Dev B pode prosseguir com o Dockerfile *(aguardando Dev B)*
 
 ### Checkpoint C — após ETAPA 4, antes de ETAPA 6
-- [ ] Dev A confirmou: `pytest -v` 100% e `ruff check app/ src/` zero erros
+- [ ] Dev A confirmar: `pytest -v` 100% e `ruff check app/ src/` zero erros *(ETAPA 4 pendente)*
 - [ ] Comandos comunicados ao Dev B: `ruff check app/ src/` e `pytest -v`
 
 ### Checkpoint D — antes de ETAPA 8 (instrumentação)
-- [ ] Decisão 2.2 tomada; `/metrics` expondo dados antes de Dev B configurar o Prometheus
+- [x] Decisão 2.2 tomada; `/metrics` expondo dados — **concluído pelo Dev A**
 
 ### Checkpoint E — após ETAPA 5, antes de ETAPA 9 (benchmark comparativo)
-- [ ] `docs/latencia_baseline.md` (p50/p95/p99 do `.pkl`) disponível
+- [ ] `docs/latencia_baseline.md` (p50/p95/p99 do `.pkl`) disponível *(aguardando ETAPA 5)*
 - [ ] Dev B e Dev C combinaram máquina/condições iguais para o benchmark ONNX
 
 ### Checkpoint F — infra pronta (ETAPA 10)
-- [ ] Contrato de env vars (2.4) confirmado antes do `terraform apply`
+- [x] Contrato de env vars (2.4) confirmado — variáveis definidas no `.env.example`
 - [ ] Dev C alinhou com Dev B a Task Definition de treino (imagem, comando, S3)
 - [ ] URL do ALB funcionando e comunicada ao Dev A para o README (ETAPA 11)
 
@@ -122,10 +121,11 @@
 
 ### 📦 Entregável 1 — API funcional em Docker + decisão arquitetural no README
 **Cobre:** ETAPA 0 (A) + ETAPA 3 (A) + ETAPA 5 (B)
-- [ ] `POST /predict` no container retorna `{classe, confianca, tempo_ms}`
-- [ ] `GET /health` retorna 200
-- [ ] Seção "Decisão Arquitetural" (batch vs real-time + justificativa ECS/ALB)
-- [ ] `docs/latencia_baseline.md` com tabela p50/p95/p99
+- [x] `POST /predict` retorna `{classe, confianca, tempo_ms}` — validado
+- [x] `GET /health` retorna 200 — validado
+- [x] Seção "Decisão Arquitetural" (batch vs real-time + justificativa ECS/ALB) no README
+- [ ] `POST /predict` funcionando **dentro do container** Docker *(Dockerfile pendente)*
+- [ ] `docs/latencia_baseline.md` com tabela p50/p95/p99 *(pendente ETAPA 5)*
 
 ### 📦 Entregável 2 — Workflow GitHub Actions + DAG Airflow
 **Cobre:** ETAPA 4 (A) + ETAPA 6 (B) + ETAPA 7 (C)
@@ -137,15 +137,15 @@
 ### 📦 Entregável 3 — Stack Docker Compose + dashboard Grafana
 **Cobre:** ETAPA 8 (B, apoio A)
 - [ ] `docker compose up` sobe API + Prometheus + Grafana sem passo manual
-- [ ] Dashboard com ≥3 painéis (o plano entrega 4) com dados reais
+- [ ] Dashboard com ≥3 painéis com dados reais
 - [ ] `monitoring/dashboard.json` versionado + print
 
 ### 📦 Entregável 4 — Modelo otimizado + comparativo + vídeo STAR
 **Cobre:** ETAPA 2 (C) + ETAPA 9 (C) + ETAPA 10 (B) + ETAPA 11 (A)
-- [ ] Classificador treinado com métricas (accuracy, F1) documentadas
-- [ ] `models/model.onnx` gerado; paridade validada
-- [ ] `docs/latencia_comparativo.md` com tabela sklearn vs ONNX
-- [ ] Vídeo STAR ≤ 5 min publicado e linkado; testado em aba anônima
+- [x] Classificador treinado com métricas documentadas (accuracy=0.607, macro-F1=0.609)
+- [ ] `models/model.onnx` gerado; paridade validada *(pendente ETAPA 9)*
+- [ ] `docs/latencia_comparativo.md` com tabela sklearn vs ONNX *(pendente ETAPA 9)*
+- [ ] Vídeo STAR ≤ 5 min publicado e linkado *(pendente ETAPA 11)*
 
 ---
 
@@ -162,7 +162,7 @@
 ### Código e execução
 - [ ] `docker compose up` sobe a stack completa do zero
 - [ ] `pytest -v` passa 100% no repositório clonado do zero
-- [ ] `ruff check app/ src/` zero erros
+- [ ] `ruff check app/ src/` zero erros *(8 erros E501 pendentes)*
 - [ ] Workflow CI verde na `main`
 
 ### Infra AWS
@@ -186,7 +186,7 @@
 
 ## ⚠️ Pontos em aberto — Time
 - [ ] **Plataforma do vídeo:** confirmar com a instituição se YouTube é aceito.
-- [ ] **Dataset:** confirmar com Dev C o dataset e a viabilidade do mapeamento para as 3 classes antes da ETAPA 1.
+- [x] **Dataset:** Medical Abstracts TC Corpus — mapeamento para 3 classes definido e documentado.
 - [ ] **Airflow na entrega:** confirmar se é necessário `docker-compose.airflow.yml` para reprodutibilidade pela banca.
-- [ ] **Limite de tamanho do texto na API:** decisão atual (Dev A): 5.000 caracteres — validar.
+- [x] **Limite de tamanho do texto na API:** **5.000 caracteres** — definido em `app/schemas.py`.
 - [ ] **Custo AWS:** definir janela da demo e responsável por rodar `terraform destroy` após a entrega.

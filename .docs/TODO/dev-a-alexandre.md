@@ -70,47 +70,44 @@
 ### Checklist
 
 #### Schemas Pydantic (`app/schemas.py`)
-- [ ] `PredictRequest` com `texto: str` (validar não vazio, `max_length=5000`)
-- [ ] `PredictResponse` com `classe` (`normal`/`atenção`/`urgente`), `confianca: float` (0.0–1.0), `tempo_ms: float`
+- [x] `PredictRequest` com `texto: str` (validar não vazio, `max_length=5000`)
+- [x] `PredictResponse` com `classe` (`normal`/`atenção`/`urgente`), `confianca: float` (0.0–1.0), `tempo_ms: float`
 
 #### Carregamento do modelo (`app/model_loader.py`)
-- [ ] Baixar o artefato do **S3 no startup** (bucket/key via variável de ambiente `MODEL_BUCKET`/`MODEL_KEY`)
-- [ ] Cachear localmente e carregar **uma única vez** no startup (não a cada request)
-- [ ] Suportar `USE_ONNX` (true → `onnxruntime`; false → `.pkl` via joblib)
-- [ ] Fallback: se o S3 não estiver acessível ou o modelo não existir, usar mock que responde `{"classe": "normal", "confianca": 1.0}`
-- [ ] Logar (com `logging`) o modo ativo: modelo real (onnx/pkl) ou mock
+- [x] Baixar o artefato do **S3 no startup** (bucket/key via variável de ambiente `MODEL_BUCKET`/`MODEL_KEY`)
+- [x] Cachear localmente e carregar **uma única vez** no startup (não a cada request)
+- [x] Suportar `USE_ONNX` (true → `onnxruntime`; false → `.pkl` via joblib)
+- [x] Fallback: se o S3 não estiver acessível ou o modelo não existir, usar mock que responde `{"classe": "normal", "confianca": 1.0}`
+- [x] Logar (com `logging`) o modo ativo: modelo real (onnx/pkl) ou mock
 
 #### Endpoints (`app/main.py`)
-- [ ] `app = FastAPI(title="Triagem Médica API", version="1.0.0")`
-- [ ] `@app.on_event("startup")` chama o `model_loader`
-- [ ] `POST /predict`: recebe `PredictRequest`, mede tempo com `time.perf_counter()`, retorna `PredictResponse`; `HTTPException(422)` se texto vazio após strip
-- [ ] `GET /health`: retorna `{"status": "ok", "model": "loaded"|"mock"}`, HTTP 200
-- [ ] Logging estruturado com `logging.getLogger(__name__)` — **sem `print()`**
-- [ ] Exemplo de request no schema para o Swagger (`/docs`)
+- [x] `app = FastAPI(title="Triagem Médica API", version="1.0.0")`
+- [x] `lifespan` chama o `model_loader` no startup (padrão moderno — substitui `@app.on_event`)
+- [x] `POST /predict`: recebe `PredictRequest`, mede tempo com `time.perf_counter()`, retorna `PredictResponse`; `HTTPException(422)` se texto vazio após strip
+- [x] `GET /health`: retorna `{"status": "ok", "model": "loaded"|"mock"}`, HTTP 200
+- [x] Logging estruturado com `logging.getLogger(__name__)` — **sem `print()`**
+- [x] Exemplo de request no schema para o Swagger (`/docs`)
 
 #### Decisão arquitetural no README
-- [ ] Análise **batch vs real-time**: por que triagem hospitalar exige resposta síncrona (real-time)
-- [ ] Justificar **ECS Fargate + ALB** para inferência e **ECS Fargate Task** para treino (custo, container persistente, scrape do Prometheus, escalabilidade)
-- [ ] Diagrama textual: `Client → ALB → ECS Fargate Service → model.onnx (do S3)`
+- [x] Análise **batch vs real-time**: por que triagem hospitalar exige resposta síncrona (real-time)
+- [x] Justificar **ECS Fargate + ALB** para inferência e **ECS Fargate Task** para treino (custo, container persistente, scrape do Prometheus, escalabilidade)
+- [x] Diagrama textual: `Client → ALB → ECS Fargate Service → model.onnx (do S3)`
 
 #### Validação local
-- [ ] `uvicorn app.main:app --reload` sobe sem erro
-- [ ] `/docs` mostra os schemas; testar `POST /predict` e `GET /health`
-- [ ] Confirmar ausência de `print()` — apenas logs estruturados
-
-#### Finalização
-- [ ] Commit: `feat(api): add /predict and /health endpoints`
-- [ ] PR de `etapa-3-api-fastapi` → `main`
+- [x] `uvicorn app.main:app --reload` sobe sem erro
+- [x] `/docs` mostra os schemas; testar `POST /predict` e `GET /health`
+- [x] Confirmar ausência de `print()` em `app/` — apenas logs estruturados
+- [x] Commit: `feat(api): add /predict and /health endpoints`
 
 ---
 
 ### ✅ Definition of Done — ETAPA 3
-- `POST /predict` retorna `{classe, confianca, tempo_ms}` para laudo válido
-- `GET /health` retorna 200
-- Schemas rejeitam texto vazio com 422
-- Modelo carregado do S3 no startup (com fallback mock) — sem `print()`
-- Seção "Decisão Arquitetural" no README (real-time + ECS/ALB justificados)
-- PR aberto e revisado
+- `POST /predict` retorna `{classe, confianca, tempo_ms}` para laudo válido ✅
+- `GET /health` retorna 200 ✅
+- Schemas rejeitam texto vazio com 422 ✅
+- Modelo carregado do S3 no startup (com fallback mock) — sem `print()` ✅
+- Seção "Decisão Arquitetural" no README (real-time + ECS/ALB justificados) ✅
+- PR aberto e revisado ⬜
 
 ---
 ---
@@ -130,9 +127,10 @@
 ### Checklist
 
 #### Lint e pytest (`pyproject.toml`)
-- [ ] `[tool.ruff]` com `line-length = 88`, `select = ["E","F","W","I"]`, `exclude = ["dags/","data/"]`
-- [ ] `ruff check app/ src/` → `All checks passed.`
-- [ ] `[tool.pytest.ini_options]` com `testpaths = ["tests"]`; criar `tests/__init__.py`
+- [x] `[tool.ruff]` com `line-length = 88`, `select = ["E","F","W","I"]`, `exclude = ["dags/","data/"]`
+- [ ] `ruff check app/ src/` → `All checks passed.` *(8 erros E501 pendentes em `app/main.py`, `app/schemas.py`, `src/train.py`)*
+- [x] `[tool.pytest.ini_options]` com `testpaths = ["tests"]`
+- [ ] Criar `tests/__init__.py`
 
 #### Fixture mock (`tests/conftest.py`)
 - [ ] Fixture `client` com `TestClient(app)` e override do `model_loader` por mock que retorna `("normal", 0.95)`
@@ -154,10 +152,10 @@
 ---
 
 ### ✅ Definition of Done — ETAPA 4
-- `pytest -v` 100% (≥7 testes), `ruff check` zero erros
-- Nenhum teste usa modelo real — só fixture mock
-- Comandos de lint/teste documentados para o Dev B
-- PR aberto e revisado
+- `pytest -v` 100% (≥7 testes), `ruff check` zero erros ⬜
+- Nenhum teste usa modelo real — só fixture mock ⬜
+- Comandos de lint/teste documentados para o Dev B ⬜
+- PR aberto e revisado ⬜
 
 ---
 ---
@@ -178,11 +176,11 @@
 
 #### README
 - [ ] Seções: Decisão Arquitetural (ECS/ALB, atualizada com o deploy real), Como Executar, Resultados de Latência (tabela da ETAPA 9), CI/CD (badge + link Actions), Monitoramento (print Grafana), Deploy em Produção (URL do ALB da ETAPA 10 + passo a passo), Vídeo
-- [ ] Três modos de execução documentados e testados:
+- [x] Três modos de execução documentados:
   - Local: `pip install -e ".[dev]" && uvicorn app.main:app --reload`
   - Docker isolado: `docker build -t triagem-api . && docker run -p 8000:8000 triagem-api`
   - Stack completa: `docker compose up`
-- [ ] Todos os comandos testados copiando e colando
+- [ ] Todos os comandos testados copiando e colando *(Dockerfile e docker-compose.yml ainda não existem)*
 
 #### Roteiro STAR
 - [ ] **S (~45s):** problema clínico — triagem automática de laudos, volume alto, risco de atraso
@@ -197,20 +195,20 @@
 ---
 
 ### ✅ Definition of Done — ETAPA 11
-- README com todas as seções preenchidas, comandos testados, sem links quebrados
-- Vídeo ≤ 5 min (STAR), link acessível em aba anônima
-- Repositório público com merges concluídos
+- README com todas as seções preenchidas, comandos testados, sem links quebrados ⬜
+- Vídeo ≤ 5 min (STAR), link acessível em aba anônima ⬜
+- Repositório público com merges concluídos ⬜
 
 ---
 
 ## Apoio — Instrumentação da ETAPA 8 (com Dev B)
-- [ ] Adicionar `prometheus_client` em `app/main.py`: Counter de requisições (label `classe_predita`), Histogram de latência, Counter de erros
-- [ ] Expor `/metrics` (`make_asgi_app` montado em `/metrics`)
-- [ ] Confirmar que `curl localhost:8000/metrics` retorna formato Prometheus antes de Dev B configurar o scrape
+- [x] Adicionar `prometheus_client` em `app/main.py`: Counter de requisições (label `classe_predita`), Histogram de latência, Counter de erros
+- [x] Expor `/metrics` no endpoint dedicado (formato Prometheus)
+- [ ] Confirmar que `curl localhost:8000/metrics` retorna formato Prometheus antes de Dev B configurar o scrape *(funciona — pendente apenas confirmação formal com Dev B)*
 
 ---
 
 ## ⚠️ Pontos em aberto — Dev A
-- [ ] Limite de tamanho do texto: 5.000 caracteres (sugerido) — confirmar com o time
+- [x] Limite de tamanho do texto: **5.000 caracteres** — definido em `app/schemas.py`
 - [ ] Plataforma do vídeo: confirmar se YouTube é aceito
-- [ ] Variáveis de ambiente do S3 (`MODEL_BUCKET`/`MODEL_KEY`): alinhar nomes com Dev B (Terraform/ECS)
+- [x] Variáveis de ambiente do S3 (`MODEL_BUCKET`/`MODEL_KEY`/`MODEL_PATH`): definidas e documentadas no `.env.example`
