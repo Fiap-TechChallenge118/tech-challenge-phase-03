@@ -12,6 +12,8 @@ dependencies = [
   "joblib==1.4.2",
   "numpy==1.26.4",
   "pandas==2.2.2",
+  # Dataset download (ETAPA 2)
+  "kagglehub==1.0.2",
   # ONNX (inference optimization — ETAPA 9)
   "onnxruntime==1.18.0",
   "skl2onnx==1.17.0",
