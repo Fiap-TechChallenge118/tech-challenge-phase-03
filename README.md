@@ -155,6 +155,63 @@ docker compose up
 # Grafana → http://localhost:3000  (admin / admin)
 ```
 
+## Testes e Qualidade de Código
+
+### Pré-requisito
+
+```bash
+pip install -e ".[dev]"
+```
+
+### Lint (ruff)
+
+```bash
+ruff check app/ src/
+```
+
+Saída esperada: `All checks passed!`
+
+### Testes automatizados (pytest)
+
+Os testes **não dependem de modelo real, S3 ou arquivo local** — o `model_loader`
+é substituído por um mock via `monkeypatch` em `tests/conftest.py`.
+
+```bash
+pytest -v
+```
+
+Saída esperada:
+
+```
+tests/test_health.py::test_health_returns_200                    PASSED
+tests/test_health.py::test_health_body_has_status_key            PASSED
+tests/test_health.py::test_health_body_has_model_key             PASSED
+tests/test_predict.py::test_predict_valid_text_returns_200       PASSED
+tests/test_predict.py::test_predict_valid_text_returns_valid_class PASSED
+tests/test_predict.py::test_predict_empty_text_returns_422       PASSED
+tests/test_predict.py::test_predict_blank_text_returns_422       PASSED
+tests/test_predict.py::test_predict_missing_field_returns_422    PASSED
+tests/test_predict.py::test_predict_text_too_long_returns_422    PASSED
+tests/test_predict.py::test_predict_response_fields_present      PASSED
+
+10 passed in ~0.1s
+```
+
+### Cobertura dos testes
+
+| Teste | O que valida |
+|---|---|
+| `test_health_returns_200` | `GET /health` retorna HTTP 200 |
+| `test_health_body_has_status_key` | Corpo contém `status: ok` |
+| `test_health_body_has_model_key` | Corpo contém a chave `model` |
+| `test_predict_valid_text_returns_200` | `POST /predict` com texto válido retorna HTTP 200 |
+| `test_predict_valid_text_returns_valid_class` | Resposta contém `classe` ∈ {normal, atenção, urgente}, `confianca` ∈ [0,1], `tempo_ms` ≥ 0 |
+| `test_predict_empty_text_returns_422` | Texto vazio é rejeitado com HTTP 422 |
+| `test_predict_blank_text_returns_422` | Texto com só espaços é rejeitado com HTTP 422 |
+| `test_predict_missing_field_returns_422` | Payload sem o campo `texto` retorna HTTP 422 |
+| `test_predict_text_too_long_returns_422` | Texto com mais de 5.000 caracteres retorna HTTP 422 |
+| `test_predict_response_fields_present` | Resposta contém exatamente os campos `classe`, `confianca` e `tempo_ms` |
+
 ## Dataset
 
 O modelo é treinado com o **Medical Abstracts TC Corpus** — 14.438 resumos de artigos médicos em inglês, rotulados em 5 categorias de condições clínicas.
