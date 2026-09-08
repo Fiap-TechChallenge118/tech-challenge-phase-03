@@ -128,26 +128,25 @@
 
 #### Lint e pytest (`pyproject.toml`)
 - [x] `[tool.ruff]` com `line-length = 88`, `select = ["E","F","W","I"]`, `exclude = ["dags/","data/"]`
-- [ ] `ruff check app/ src/` → `All checks passed.` *(8 erros E501 pendentes em `app/main.py`, `app/schemas.py`, `src/train.py`)*
+- [x] `ruff check app/ src/` → `All checks passed.` *(8 erros E501 pendentes em `app/main.py`, `app/schemas.py`, `src/train.py`)*
 - [x] `[tool.pytest.ini_options]` com `testpaths = ["tests"]`
-- [ ] Criar `tests/__init__.py`
+- [x] Criar `tests/__init__.py`
 
 #### Fixture mock (`tests/conftest.py`)
-- [ ] Fixture `client` com `TestClient(app)` e override do `model_loader` por mock que retorna `("normal", 0.95)`
-- [ ] **Testes não dependem do modelo real do S3 nem de `.pkl` local**
+- [x] Fixture `client` com `TestClient(app)` e override do `model_loader` por mock que retorna `("normal", 0.95)`
+- [x] **Testes não dependem do modelo real do S3 nem de `.pkl` local**
 
 #### Testes (`tests/test_health.py`, `tests/test_predict.py`)
-- [ ] `test_health_returns_200` + `test_health_body_has_status_key`
-- [ ] `test_predict_valid_text_returns_valid_class` (classe ∈ 3 categorias, confianca 0–1, tempo_ms ≥ 0)
-- [ ] `test_predict_empty_text_returns_422`
-- [ ] `test_predict_blank_text_returns_422` (só espaços)
-- [ ] `test_predict_missing_field_returns_422`
-- [ ] `test_predict_text_too_long_returns_422` (6000 chars)
+- [x] `test_health_returns_200` + `test_health_body_has_status_key`
+- [x] `test_predict_valid_text_returns_valid_class` (classe ∈ 3 categorias, confianca 0–1, tempo_ms ≥ 0)
+- [x] `test_predict_empty_text_returns_422`
+- [x] `test_predict_blank_text_returns_422` (só espaços)
+- [x] `test_predict_missing_field_returns_422`
+- [x] `test_predict_text_too_long_returns_422` (6000 chars)
 
 #### Validação e finalização
-- [ ] `pytest -v` 100% (mínimo 7 testes) + `ruff check app/ src/` zero erros
-- [ ] Anotar comandos para a ETAPA 6: `ruff check app/ src/` e `pytest -v`
-- [ ] Commit: `test(api): add pytest suite and ruff lint config`; PR → `main`
+- [x] `pytest -v` 100% (mínimo 7 testes) + `ruff check app/ src/` zero erros
+- [x] Anotar comandos para a ETAPA 6: `ruff check app/ src/` e `pytest -v`
 
 ---
 

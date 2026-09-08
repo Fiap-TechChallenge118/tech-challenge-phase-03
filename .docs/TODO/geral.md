@@ -62,10 +62,10 @@
 | Etapa | Responsável | Data alvo |
 |---|---|---|
 | ETAPA 0 | Dev A | ✅ concluída |
-| ETAPA 1 | Dev C | ___/___/___ |
+| ETAPA 1 | Dev C | ✅ concluída |
 | ETAPA 2 | Dev C | ✅ concluída |
 | ETAPA 3 | Dev A | ✅ concluída |
-| ETAPA 4 | Dev A | ___/___/___ |
+| ETAPA 4 | Dev A | ✅ concluída |
 | ETAPA 5 | Dev B | ___/___/___ |
 | ETAPA 6 | Dev B | ___/___/___ |
 | ETAPA 7 | Dev C | ___/___/___ |
@@ -93,8 +93,8 @@
 - [ ] Dev B pode prosseguir com o Dockerfile *(aguardando Dev B)*
 
 ### Checkpoint C — após ETAPA 4, antes de ETAPA 6
-- [ ] Dev A confirmar: `pytest -v` 100% e `ruff check app/ src/` zero erros *(ETAPA 4 pendente)*
-- [ ] Comandos comunicados ao Dev B: `ruff check app/ src/` e `pytest -v`
+- [x] Dev A confirmar: `pytest -v` 100% e `ruff check app/ src/` zero erros *(ETAPA 4 pendente)*
+- [x] Comandos comunicados ao Dev B: `ruff check app/ src/` e `pytest -v`
 
 ### Checkpoint D — antes de ETAPA 8 (instrumentação)
 - [x] Decisão 2.2 tomada; `/metrics` expondo dados — **concluído pelo Dev A**
