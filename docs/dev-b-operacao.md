@@ -158,10 +158,10 @@ Salvar print da execução para o Dev A. Badge a inserir por ele no README:
 
 ## Pendências para o Dev C
 
-- Regenerar `models/model.pkl` com sklearn **1.4.2** e as dependências de
-  `pyproject.toml` + `constraints.txt`. O arquivo recebido foi salvo com 1.9.0;
-  `scripts/validate_model.py` detectou a diferença. Entregar também hash e
-  versões do treino. O pipeline deve incluir o preprocessamento.
+- Validado `models/model.pkl` com sklearn **1.9.0**, versão fixada no
+  `pyproject.toml` e na imagem. O arquivo recebido foi validado: classes 1–5,
+  `predict_proba` com cinco colunas e probabilidades válidas. Entregar também
+  hash e versões do treino. O pipeline deve incluir o preprocessamento.
 - Entregar ONNX e paridade após a etapa de otimização. Enquanto isso, `.pkl` é
   suficiente para baseline e primeiro deploy real.
 - Definir ingestão de `DATA_BUCKET`/`DATA_KEY` para
@@ -262,20 +262,20 @@ ela não foi copiada para GitHub nem para os containers. CI e ECS usam roles pr�
 
 Em 12/09/2026, `models/model.pkl` chegou com SHA-256
 `3516b921aa882c42a4f1ca7e334d72b9e3f51c1a34287ddcb510e7cf2e7157b1`.
-A desserialização indicou treino em sklearn 1.9.0, diferente do runtime 1.4.2.
-O arquivo foi preservado e não foi enviado ao S3. O Dockerfile adiciona
+A desserialização indicou treino em sklearn 1.9.0; o runtime foi alinhado à mesma
+versão. O arquivo foi enviado ao S3 versionado em `models/model.pkl`. O Dockerfile adiciona
 `/app/src` ao `PYTHONPATH` para resolver a referência `preprocess` do treino.
 
-O Dev C deve recriar seu ambiente a partir das dependências do repositório e
-refazer o treino, preservando o artefato anterior até concluir a validação.
-Confirmar a versão antes de treinar:
+O Dev C deve usar as dependências do repositório. Confirmar a versão antes de
+treinar:
 
 ```bash
 .venv/bin/pip install -c constraints.txt -e '.[dev]'
 .venv/bin/python -c 'import sklearn; print(sklearn.__version__)'
-# Esperado: 1.4.2. Executar o treino do Dev C e depois:
+# Esperado: 1.9.0. Executar o treino do Dev C e depois:
 .venv/bin/python scripts/validate_model.py models/model.pkl
 ```
 
 A compatibilidade entre versões distintas de sklearn não é suportada para
-modelos persistidos; ver a [documentação de persistência](https://scikit-learn.org/stable/model_persistence.html).
+modelos persistidos; o runtime foi alinhado à versão do artefato. Ver a
+[documentação de persistência](https://scikit-learn.org/stable/model_persistence.html).

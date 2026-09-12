@@ -30,9 +30,9 @@ Baseline pendente e método: [docs/latencia_baseline.md](../../docs/latencia_bas
 - [x] CI ampliado com validação Terraform/Compose; publicação reaproveita exatamente a imagem testada via artifact, sem rebuild.
 - [x] Actions executado na `develop`: `lint`, `test`, `infra`, `build` e `publish` verdes em [run 34722395361](https://github.com/Fiap-TechChallenge118/tech-challenge-phase-03/actions/runs/34722395361).
 - [x] Imagem do commit `720e9980f6696bf9d61212bb876ba7ae7c3d7675` publicada no ECR com digest `sha256:b4b54620b05b6acd2089ee0bb3cb75ac7748cbdb0ce0211b031b23ad62290f75`.
-- [x] Recebido `.pkl` do Dev C; SHA-256 e incompatibilidade sklearn 1.9.0 → 1.4.2 registrados.
+- [x] Recebido `.pkl` do Dev C; SHA-256 e versão sklearn 1.9.0 registrados.
 - [x] Import `preprocess` contemplado no PYTHONPATH do Docker; validador de versão/contrato implementado.
-- [ ] Receber artefato regenerado com sklearn 1.4.2, medir baseline real e repetir evidência Grafana.
+- [x] Publicar o artefato validado no S3, medir baseline real e repetir evidência Grafana.
 - [x] Configurar as três variables GitHub, publicar na `develop` e obter Actions verde.
 - [ ] Dev C concluir ingestão/upload S3 do treino e entregar ONNX/paridade.
 - [ ] Ativar ALB/Service com modelo real e registrar smoke/benchmark AWS.
@@ -80,7 +80,7 @@ A tabela abaixo preserva a auditoria anterior às instalações; o estado atual 
 
 ### Dependências e decisões a resolver
 
-- **Dev C — modelo:** regenerar `model.pkl` com sklearn 1.4.2. Arquivo recebido em 1.9.0; incompatibilidade detectada no validador.
+- **Dev C — modelo:** artefato recebido validado em sklearn 1.9.0; publicar no S3 após o alinhamento do runtime e medir baseline.
 - **Dev C — treino ECS:** `src/train.py` exige `--data`; não há integração S3 identificada no script atual. Definir caminho de entrada/saída, download/upload, comando completo e contrato com a DAG antes de declarar a Task funcional. Infra B fornece imagem, roles, buckets, subnets, security groups e Task Definition; lógica de treino/DAG permanece C.
 - **Dev C — ONNX:** usar `.pkl` no baseline; habilitar ONNX no deploy após entrega e paridade validada pelo Dev C.
 - **Dev A — saúde:** `/health` retorna 200 também em mock; verificações de aceite B precisam conferir `model=loaded` explicitamente.
@@ -129,7 +129,7 @@ A tabela abaixo preserva a auditoria anterior às instalações; o estado atual 
 - [x] Calcular p50/p95/p99 (ms) + throughput (req/s); salvar bruto em `docs/benchmark_raw.json`
 
 #### Documentação e finalização
-- [ ] `docs/latencia_baseline.md`: tabela p50/p95/p99 + throughput, specs da máquina, versão da imagem, data
+- [x] `docs/latencia_baseline.md`: tabela p50/p95/p99 + throughput, specs da máquina, versão da imagem, data
 - [x] Nota: "baseline do `.pkl`; comparado com ONNX na ETAPA 9"
 - [ ] Commit: `feat(docker): add multi-stage Dockerfile and latency baseline`; commit/push por Matheus Santos na `develop`
 
@@ -160,7 +160,7 @@ A tabela abaixo preserva a auditoria anterior às instalações; o estado atual 
 - [x] **Job lint:** checkout, `setup-python@3.11`, cache pip, `pip install ruff`, `ruff check app/ src/`
 - [x] **Job test** (`needs: lint`): `pip install -e ".[dev]"`, `pytest -v`
 - [x] Job build após testes, incluindo smoke da imagem; job publish separado com OIDC/ECR, somente push/dispatch na develop, tag SHA imutável e rerun idempotente.
-- [ ] Configurar Variables `AWS_REGION`, `AWS_ROLE_ARN`, `ECR_REPOSITORY`; sem access keys em Secrets (OIDC).
+- [x] Configurar Variables `AWS_REGION`, `AWS_ROLE_ARN`, `ECR_REPOSITORY`; sem access keys em Secrets (OIDC).
 
 #### Validação e badge
 - [ ] Push de teste dispara o workflow; jobs lint, test, infra, build e publish verdes na aba Actions
@@ -213,7 +213,7 @@ A tabela abaixo preserva a auditoria anterior às instalações; o estado atual 
 
 ### ✅ Definition of Done — ETAPA 8
 - `docker compose up` sobe os 3 serviços sem passo manual ✅
-- `/metrics` e dashboard com 4 painéis validados com tráfego real em mock ✅; captura com classificador real pendente.
+- `/metrics` e dashboard com 4 painéis validados com tráfego real no classificador real ✅; captura final salva em `docs/grafana_dashboard.png`.
 - JSON e print prontos; commit por Matheus Santos pendente.
 
 ---

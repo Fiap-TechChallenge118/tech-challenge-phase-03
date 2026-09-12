@@ -2,18 +2,24 @@
 
 ## Situação em 12/09/2026
 
-Container e ferramenta de medição validados. **Baseline do modelo pendente:** o
-`models/model.pkl` recebido em 12/09 foi treinado com sklearn 1.9.0; o runtime
-fixado no projeto usa 1.4.2. O Dev C precisa regenerá-lo nesse ambiente.
+Container e ferramenta de medição validados. O `models/model.pkl` recebido em
+12/09 foi validado com sklearn 1.9.0, versão fixada no runtime do projeto. O
+artefato carrega, expõe classes 1–5 e produz probabilidades válidas. O mesmo
+arquivo foi publicado no S3 versionado; SHA-256:
+`3516b921aa882c42a4f1ca7e334d72b9e3f51c1a34287ddcb510e7cf2e7157b1`.
 SHA-256 recebido: `3516b921aa882c42a4f1ca7e334d72b9e3f51c1a34287ddcb510e7cf2e7157b1`.
-O arquivo foi preservado, permanece fora do Git e não foi publicado no S3.
-O baseline será do `.pkl`, comparado com ONNX pelo Dev C na Etapa 9.
+O arquivo permanece fora do Git. O baseline abaixo é do `.pkl`, a ser comparado
+com ONNX pelo Dev C na Etapa 9.
 
 | Medida do modelo real | Resultado |
 |---|---|
-| p50 / p95 / p99 HTTP | Pendente de artefato compatível |
-| Throughput sequencial | Pendente de artefato compatível |
+| p50 / p95 / p99 HTTP | 1,697 / 2,164 / 2,570 ms |
+| Throughput sequencial | 575,988 req/s |
 | Latência na AWS | Pendente de modelo e ativação do serviço |
+
+Execução real em 12/09/2026: 500 requisições sequenciais, 20 warmup, três
+textos fixos, API local com `/health` em `model=loaded`. Relatório bruto:
+`docs/benchmark_raw.json`.
 
 Não usar `benchmark_smoke_mock.json` como resultado de otimização: ele contém
 200 chamadas de infraestrutura com o fallback mock e 20 chamadas de aquecimento.
