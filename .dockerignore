@@ -29,3 +29,8 @@ monitoring/
 .DS_Store
 .idea
 .vscode
+
+# Artefatos montados em runtime e instaladores locais
+models/
+*.pkg
+*.tfplan

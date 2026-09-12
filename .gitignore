@@ -43,3 +43,8 @@ crash.log
 .DS_Store
 .idea/
 .vscode/
+
+# Infra e evidências locais
+*.tfplan
+infra/backend.hcl
+AWSCLIV2.pkg

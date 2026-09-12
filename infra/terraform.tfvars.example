@@ -1,0 +1,6 @@
+region           = "us-east-1"
+image_uri        = "958268153605.dkr.ecr.us-east-1.amazonaws.com/tc03-triagem:COMMIT_SHA"
+enable_inference = false
+model_key        = "models/model.pkl"
+use_onnx         = false
+expires_on       = "2026-09-26"

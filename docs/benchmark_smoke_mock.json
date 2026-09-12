@@ -1,0 +1,1623 @@
+{
+  "timestamp_utc": "2026-09-12T17:46:09.382567+00:00",
+  "url": "http://localhost:8000/predict",
+  "model_status": "mock",
+  "purpose": "smoke_only",
+  "platform": "macOS-15.6.1-arm64-arm-64bit",
+  "n": 200,
+  "warmup": 20,
+  "texts": [
+    "Patient presents with acute chest pain and shortness of breath.",
+    "Neurological examination shows progressive weakness and headache.",
+    "Routine examination with no significant pathological findings."
+  ],
+  "summary": {
+    "p50_ms": 0.6896880004205741,
+    "p95_ms": 0.9892041482089554,
+    "p99_ms": 3.2439010016605567,
+    "throughput_rps": 1299.480075410218,
+    "total_seconds": 0.15390770800149767
+  },
+  "samples": [
+    {
+      "latency_ms": 0.988749998214189,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.00045899997758169775
+      }
+    },
+    {
+      "latency_ms": 0.7633749992237426,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0004580000450005173
+      }
+    },
+    {
+      "latency_ms": 0.7674580010643695,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0004169999670011748
+      }
+    },
+    {
+      "latency_ms": 0.7036669994704425,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.00037500001326407073
+      }
+    },
+    {
+      "latency_ms": 0.6974999996600673,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.00041700002384459367
+      }
+    },
+    {
+      "latency_ms": 3.6755410001205746,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.00041700002384459367
+      }
+    },
+    {
+      "latency_ms": 0.6415409989131149,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.00037500001326407073
+      }
+    },
+    {
+      "latency_ms": 0.6483329998445697,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.00041700002384459367
+      }
+    },
+    {
+      "latency_ms": 0.7112499988579657,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.00041600003441999434
+      }
+    },
+    {
+      "latency_ms": 0.6895420010550879,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0004579999881570984
+      }
+    },
+    {
+      "latency_ms": 0.6852919977973215,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0004999999987376214
+      }
+    },
+    {
+      "latency_ms": 0.7828330017218832,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0004579999881570984
+      }
+    },
+    {
+      "latency_ms": 1.0828750018845312,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0004580000450005173
+      }
+    },
+    {
+      "latency_ms": 0.6346669979393482,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0004580000450005173
+      }
+    },
+    {
+      "latency_ms": 0.6789159997424576,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0005839999630552484
+      }
+    },
+    {
+      "latency_ms": 4.000249999080552,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.00037500001326407073
+      }
+    },
+    {
+      "latency_ms": 0.6592079989786725,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0004580000450005173
+      }
+    },
+    {
+      "latency_ms": 0.6199999988893978,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0005420000093181443
+      }
+    },
+    {
+      "latency_ms": 0.7206250011222437,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.00037499995642065187
+      }
+    },
+    {
+      "latency_ms": 0.65987500056508,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0004580000450005173
+      }
+    },
+    {
+      "latency_ms": 0.7136249987524934,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0005420000093181443
+      }
+    },
+    {
+      "latency_ms": 0.6730409986630548,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0004159999775765755
+      }
+    },
+    {
+      "latency_ms": 0.734041997930035,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0006250000410545908
+      }
+    },
+    {
+      "latency_ms": 0.7059159979689866,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.00045899997758169775
+      }
+    },
+    {
+      "latency_ms": 0.7588340013171546,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0004579999881570984
+      }
+    },
+    {
+      "latency_ms": 0.6968330017116386,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.00041700002384459367
+      }
+    },
+    {
+      "latency_ms": 0.7043750010780059,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0004169999670011748
+      }
+    },
+    {
+      "latency_ms": 0.8138329976645764,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.00045899997758169775
+      }
+    },
+    {
+      "latency_ms": 0.7157910004025325,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.00045899997758169775
+      }
+    },
+    {
+      "latency_ms": 0.6898339997860603,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0004169999670011748
+      }
+    },
+    {
+      "latency_ms": 0.8914999998523854,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.00041700002384459367
+      }
+    },
+    {
+      "latency_ms": 0.791041999036679,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0004580000450005173
+      }
+    },
+    {
+      "latency_ms": 0.7504580025852192,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0004169999670011748
+      }
+    },
+    {
+      "latency_ms": 0.6462909987021703,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.00041700002384459367
+      }
+    },
+    {
+      "latency_ms": 0.6562080016010441,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.00037500001326407073
+      }
+    },
+    {
+      "latency_ms": 0.7559580008091871,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0006669999947916949
+      }
+    },
+    {
+      "latency_ms": 0.6492079992312938,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.00041700002384459367
+      }
+    },
+    {
+      "latency_ms": 0.6462919991463423,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0004579999881570984
+      }
+    },
+    {
+      "latency_ms": 0.7804999986547045,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0005830000304740679
+      }
+    },
+    {
+      "latency_ms": 0.6815410015406087,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.00041600003441999434
+      }
+    },
+    {
+      "latency_ms": 0.7159170017985161,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.00037500001326407073
+      }
+    },
+    {
+      "latency_ms": 0.6424999992304947,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0004590000344251166
+      }
+    },
+    {
+      "latency_ms": 0.6467080020229332,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0006250000410545908
+      }
+    },
+    {
+      "latency_ms": 0.6524999989778735,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.00041700002384459367
+      }
+    },
+    {
+      "latency_ms": 0.7754159996693488,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0004999999987376214
+      }
+    },
+    {
+      "latency_ms": 0.68950000058976,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0004579999881570984
+      }
+    },
+    {
+      "latency_ms": 0.7734579994576052,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.00041700002384459367
+      }
+    },
+    {
+      "latency_ms": 0.801416998001514,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0004159999775765755
+      }
+    },
+    {
+      "latency_ms": 0.7209169998532161,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0004169999670011748
+      }
+    },
+    {
+      "latency_ms": 0.7275829993886873,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0004999999987376214
+      }
+    },
+    {
+      "latency_ms": 0.721415999578312,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.00041700002384459367
+      }
+    },
+    {
+      "latency_ms": 0.6097500008763745,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.00045899997758169775
+      }
+    },
+    {
+      "latency_ms": 0.7279579986061435,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0004579999881570984
+      }
+    },
+    {
+      "latency_ms": 0.7387910009128973,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0004999999987376214
+      }
+    },
+    {
+      "latency_ms": 0.8351669966941699,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.00045899997758169775
+      }
+    },
+    {
+      "latency_ms": 0.9978329981095158,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0005830000304740679
+      }
+    },
+    {
+      "latency_ms": 0.8469579988741316,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.000624999984211172
+      }
+    },
+    {
+      "latency_ms": 0.6789580002077855,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0004580000450005173
+      }
+    },
+    {
+      "latency_ms": 0.6840409987489693,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0004169999670011748
+      }
+    },
+    {
+      "latency_ms": 0.8303329996124376,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0005830000304740679
+      }
+    },
+    {
+      "latency_ms": 0.6215830035216641,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0004579999881570984
+      }
+    },
+    {
+      "latency_ms": 0.6479999974544626,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.00041700002384459367
+      }
+    },
+    {
+      "latency_ms": 0.6865830000606366,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.00037500001326407073
+      }
+    },
+    {
+      "latency_ms": 0.6281249989115167,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0005840000198986672
+      }
+    },
+    {
+      "latency_ms": 0.7117920031305403,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.00045899997758169775
+      }
+    },
+    {
+      "latency_ms": 0.6870840006740764,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0004999999987376214
+      }
+    },
+    {
+      "latency_ms": 0.6297079999058042,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.00041700002384459367
+      }
+    },
+    {
+      "latency_ms": 0.6721669997205026,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.00041700002384459367
+      }
+    },
+    {
+      "latency_ms": 0.7593330010422505,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0004159999775765755
+      }
+    },
+    {
+      "latency_ms": 0.6651660005445592,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.00041700002384459367
+      }
+    },
+    {
+      "latency_ms": 0.6636250000155997,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0005420000093181443
+      }
+    },
+    {
+      "latency_ms": 0.6996669981162995,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0004579999881570984
+      }
+    },
+    {
+      "latency_ms": 0.676499999826774,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.00037499995642065187
+      }
+    },
+    {
+      "latency_ms": 0.6822920004196931,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.00041700002384459367
+      }
+    },
+    {
+      "latency_ms": 0.6647500013059471,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.00037500001326407073
+      }
+    },
+    {
+      "latency_ms": 0.6730829991283827,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.00037500001326407073
+      }
+    },
+    {
+      "latency_ms": 0.8248749982158188,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0004999999987376214
+      }
+    },
+    {
+      "latency_ms": 0.741666997782886,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0005840000198986672
+      }
+    },
+    {
+      "latency_ms": 0.6572909987880848,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0004999999987376214
+      }
+    },
+    {
+      "latency_ms": 0.6833330007793847,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0004169999670011748
+      }
+    },
+    {
+      "latency_ms": 1.2342499976512045,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0004999999987376214
+      }
+    },
+    {
+      "latency_ms": 0.8840830014378298,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.00041600003441999434
+      }
+    },
+    {
+      "latency_ms": 0.6857920016045682,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0004579999881570984
+      }
+    },
+    {
+      "latency_ms": 0.7207080016087275,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0004999999987376214
+      }
+    },
+    {
+      "latency_ms": 0.8062920023803599,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.00045899997758169775
+      }
+    },
+    {
+      "latency_ms": 0.737165999453282,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.00045899997758169775
+      }
+    },
+    {
+      "latency_ms": 3.239541001676116,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0004579999881570984
+      }
+    },
+    {
+      "latency_ms": 1.0665000008884817,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0004999999987376214
+      }
+    },
+    {
+      "latency_ms": 0.7589170018036384,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0004999999987376214
+      }
+    },
+    {
+      "latency_ms": 0.6642080006713513,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0004579999881570984
+      }
+    },
+    {
+      "latency_ms": 0.7055000023683533,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.00041700002384459367
+      }
+    },
+    {
+      "latency_ms": 0.8788749983068556,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0004580000450005173
+      }
+    },
+    {
+      "latency_ms": 0.7084579992806539,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0004999999987376214
+      }
+    },
+    {
+      "latency_ms": 0.8416659984504804,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.00041700002384459367
+      }
+    },
+    {
+      "latency_ms": 1.0865420008485671,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0004999999987376214
+      }
+    },
+    {
+      "latency_ms": 0.874084002134623,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0004169999670011748
+      }
+    },
+    {
+      "latency_ms": 0.7324580001295544,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0004579999881570984
+      }
+    },
+    {
+      "latency_ms": 0.8047919982345775,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0004579999881570984
+      }
+    },
+    {
+      "latency_ms": 0.6934169978194404,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.00041700002384459367
+      }
+    },
+    {
+      "latency_ms": 0.8733750000828877,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0004159999775765755
+      }
+    },
+    {
+      "latency_ms": 0.7561249985883478,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0004579999881570984
+      }
+    },
+    {
+      "latency_ms": 0.8720000005268957,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.00041700002384459367
+      }
+    },
+    {
+      "latency_ms": 0.6995000003371388,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.00041700002384459367
+      }
+    },
+    {
+      "latency_ms": 0.9060419979505241,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.00041700002384459367
+      }
+    },
+    {
+      "latency_ms": 0.7051250031508971,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.00041700002384459367
+      }
+    },
+    {
+      "latency_ms": 0.6604169975616969,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0004169999670011748
+      }
+    },
+    {
+      "latency_ms": 0.7085420002113096,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0004169999670011748
+      }
+    },
+    {
+      "latency_ms": 0.8578329980082344,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0004579999881570984
+      }
+    },
+    {
+      "latency_ms": 0.7449169970641378,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0004999999987376214
+      }
+    },
+    {
+      "latency_ms": 0.754249998863088,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0004999999987376214
+      }
+    },
+    {
+      "latency_ms": 0.7012080022832379,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0004999999987376214
+      }
+    },
+    {
+      "latency_ms": 0.6566250012838282,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0005420000093181443
+      }
+    },
+    {
+      "latency_ms": 0.6626249996770639,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0004999999987376214
+      }
+    },
+    {
+      "latency_ms": 0.6775420006306376,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0004169999670011748
+      }
+    },
+    {
+      "latency_ms": 0.6454579997807741,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0004579999881570984
+      }
+    },
+    {
+      "latency_ms": 0.7145000017771963,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.00041700002384459367
+      }
+    },
+    {
+      "latency_ms": 0.9137500019278377,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0005420000093181443
+      }
+    },
+    {
+      "latency_ms": 0.6431670008169021,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0004579999881570984
+      }
+    },
+    {
+      "latency_ms": 0.6850000027043279,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0004579999881570984
+      }
+    },
+    {
+      "latency_ms": 0.6591669989575166,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0005420000093181443
+      }
+    },
+    {
+      "latency_ms": 0.6423750019166619,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.00041700002384459367
+      }
+    },
+    {
+      "latency_ms": 0.7449999975506216,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0004999999987376214
+      }
+    },
+    {
+      "latency_ms": 0.7852920025470667,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.00041700002384459367
+      }
+    },
+    {
+      "latency_ms": 0.7607920015288983,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0005420000093181443
+      }
+    },
+    {
+      "latency_ms": 0.6191659995238297,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.00037500001326407073
+      }
+    },
+    {
+      "latency_ms": 0.7107090023055207,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0004999999987376214
+      }
+    },
+    {
+      "latency_ms": 0.6689590009045787,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.00037500001326407073
+      }
+    },
+    {
+      "latency_ms": 0.626207998720929,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.00041700002384459367
+      }
+    },
+    {
+      "latency_ms": 0.6018339990987442,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.000334000048951566
+      }
+    },
+    {
+      "latency_ms": 0.6299169981502928,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.00037500001326407073
+      }
+    },
+    {
+      "latency_ms": 0.6230830003914889,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.00037500001326407073
+      }
+    },
+    {
+      "latency_ms": 0.6646250003541354,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0004159999775765755
+      }
+    },
+    {
+      "latency_ms": 0.6385420019796584,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.00037500001326407073
+      }
+    },
+    {
+      "latency_ms": 0.6304160015133675,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.00041700002384459367
+      }
+    },
+    {
+      "latency_ms": 0.6282499998633284,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.00037500001326407073
+      }
+    },
+    {
+      "latency_ms": 0.6327909977699164,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.00037500001326407073
+      }
+    },
+    {
+      "latency_ms": 0.6579159999091644,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.00041700002384459367
+      }
+    },
+    {
+      "latency_ms": 0.6282499998633284,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.00033299994584012893
+      }
+    },
+    {
+      "latency_ms": 0.6377919999067672,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.00037500001326407073
+      }
+    },
+    {
+      "latency_ms": 0.6327920018520672,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0004579999881570984
+      }
+    },
+    {
+      "latency_ms": 0.8051250006246846,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0004999999987376214
+      }
+    },
+    {
+      "latency_ms": 0.6761250006093178,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.00037500001326407073
+      }
+    },
+    {
+      "latency_ms": 0.6577499989361968,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0004169999670011748
+      }
+    },
+    {
+      "latency_ms": 0.7955000000947621,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0003330000026835478
+      }
+    },
+    {
+      "latency_ms": 0.6971670009079389,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.00037500001326407073
+      }
+    },
+    {
+      "latency_ms": 0.6610829987039324,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0004579999881570984
+      }
+    },
+    {
+      "latency_ms": 0.6739169984939508,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0004579999881570984
+      }
+    },
+    {
+      "latency_ms": 0.6804580007155892,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.00045899997758169775
+      }
+    },
+    {
+      "latency_ms": 0.648207998892758,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.00041700002384459367
+      }
+    },
+    {
+      "latency_ms": 0.6395409982360434,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0004580000450005173
+      }
+    },
+    {
+      "latency_ms": 0.6381249986588955,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0004579999881570984
+      }
+    },
+    {
+      "latency_ms": 0.6493750006484333,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.00037500001326407073
+      }
+    },
+    {
+      "latency_ms": 0.5845000014232937,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.00041700002384459367
+      }
+    },
+    {
+      "latency_ms": 0.6161249984870665,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.00037499995642065187
+      }
+    },
+    {
+      "latency_ms": 0.6261670023377519,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0004999999987376214
+      }
+    },
+    {
+      "latency_ms": 0.6981669976084959,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.00037500001326407073
+      }
+    },
+    {
+      "latency_ms": 0.6298750013229437,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0004159999775765755
+      }
+    },
+    {
+      "latency_ms": 0.6147079984657466,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.000541000019893545
+      }
+    },
+    {
+      "latency_ms": 0.5685830001311842,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.00037500001326407073
+      }
+    },
+    {
+      "latency_ms": 0.7217079983092844,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0004169999670011748
+      }
+    },
+    {
+      "latency_ms": 0.6592500030819792,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.000582999973630649
+      }
+    },
+    {
+      "latency_ms": 0.6174999980430584,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0004579999881570984
+      }
+    },
+    {
+      "latency_ms": 0.661666999803856,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.00045899997758169775
+      }
+    },
+    {
+      "latency_ms": 0.6484580007963814,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0003330000026835478
+      }
+    },
+    {
+      "latency_ms": 0.949542001762893,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0004159999775765755
+      }
+    },
+    {
+      "latency_ms": 0.8635419981146697,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.00041700002384459367
+      }
+    },
+    {
+      "latency_ms": 0.6745840000803582,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0003330000026835478
+      }
+    },
+    {
+      "latency_ms": 0.6486250022135209,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.00037500001326407073
+      }
+    },
+    {
+      "latency_ms": 0.7879170007072389,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0004579999881570984
+      }
+    },
+    {
+      "latency_ms": 0.6952920011826791,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.00037500001326407073
+      }
+    },
+    {
+      "latency_ms": 0.6434999995690305,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0004579999881570984
+      }
+    },
+    {
+      "latency_ms": 0.6537080007547047,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.00037499995642065187
+      }
+    },
+    {
+      "latency_ms": 0.5820000005769543,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.00041700002384459367
+      }
+    },
+    {
+      "latency_ms": 0.66533299832372,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.00041700002384459367
+      }
+    },
+    {
+      "latency_ms": 0.6520840033772402,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0004169999670011748
+      }
+    },
+    {
+      "latency_ms": 0.7570410016342066,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.00037500001326407073
+      }
+    },
+    {
+      "latency_ms": 0.5925410005147569,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0004169999670011748
+      }
+    },
+    {
+      "latency_ms": 0.6275830019148998,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.00037500001326407073
+      }
+    },
+    {
+      "latency_ms": 0.7256670032802504,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.00041600003441999434
+      }
+    },
+    {
+      "latency_ms": 0.6098749981902074,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.00037499995642065187
+      }
+    },
+    {
+      "latency_ms": 0.6794999972044025,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.00037500001326407073
+      }
+    },
+    {
+      "latency_ms": 0.6853330014564563,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.00045899997758169775
+      }
+    },
+    {
+      "latency_ms": 0.749790997360833,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.00041700002384459367
+      }
+    },
+    {
+      "latency_ms": 0.7829579990357161,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.00037499995642065187
+      }
+    },
+    {
+      "latency_ms": 1.2444170024537016,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0004999999987376214
+      }
+    },
+    {
+      "latency_ms": 0.8168330023181625,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.00037499995642065187
+      }
+    },
+    {
+      "latency_ms": 0.7032920002529863,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0004999999987376214
+      }
+    },
+    {
+      "latency_ms": 0.7286660002137069,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.00041700002384459367
+      }
+    },
+    {
+      "latency_ms": 0.7903330006229226,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.00037500001326407073
+      }
+    },
+    {
+      "latency_ms": 0.7612919980601873,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0004580000450005173
+      }
+    },
+    {
+      "latency_ms": 1.0027910029748455,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0003330000026835478
+      }
+    },
+    {
+      "latency_ms": 0.7250840026244987,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.00045899997758169775
+      }
+    },
+    {
+      "latency_ms": 0.7714580024185125,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0004999999987376214
+      }
+    },
+    {
+      "latency_ms": 0.6747500010533258,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0004579999881570984
+      }
+    },
+    {
+      "latency_ms": 0.7100839975464623,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0004169999670011748
+      }
+    },
+    {
+      "latency_ms": 0.676958999974886,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.00037500001326407073
+      }
+    },
+    {
+      "latency_ms": 0.6239169997570571,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.00041700002384459367
+      }
+    },
+    {
+      "latency_ms": 0.6592499994440004,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0005420000093181443
+      }
+    },
+    {
+      "latency_ms": 0.6742499972460791,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0004169999670011748
+      }
+    },
+    {
+      "latency_ms": 0.6048750001355074,
+      "response": {
+        "classe": "normal",
+        "confianca": 1.0,
+        "tempo_ms": 0.0004169999670011748
+      }
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "datasets_bucket": "tc03-triagem-958268153605-datasets",
+  "ecs_cluster": "tc03-triagem",
+  "ecs_security_group_id": "sg-0a55aa1b4a272d866",
+  "execution_role_arn": "arn:aws:iam::958268153605:role/tc03-triagem-execution",
+  "inference_task_definition": "arn:aws:ecs:us-east-1:958268153605:task-definition/tc03-triagem-inference:1",
+  "model_bucket": "tc03-triagem-958268153605-models",
+  "public_subnet_ids": [
+    "subnet-0fcdbf489d6e52cab",
+    "subnet-06703a36c8e02e2d5"
+  ],
+  "training_task_definition": "arn:aws:ecs:us-east-1:958268153605:task-definition/tc03-triagem-training:1",
+  "training_task_role_arn": "arn:aws:iam::958268153605:role/tc03-triagem-training"
+}

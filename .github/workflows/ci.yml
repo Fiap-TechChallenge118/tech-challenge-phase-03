@@ -1,0 +1,139 @@
+name: CI
+on:
+  push:
+    branches: [develop]
+  pull_request:
+    branches: [develop]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: |
+            pyproject.toml
+            constraints.txt
+      - run: pip install ruff==0.4.4
+      - run: ruff check app/ src/ scripts/benchmark.py scripts/test_benchmark.py scripts/validate_model.py scripts/test_validate_model.py
+  test:
+    needs: lint
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: |
+            pyproject.toml
+            constraints.txt
+      - run: pip install -c constraints.txt -e '.[dev]'
+      - run: pytest -v tests/ scripts/test_benchmark.py scripts/test_validate_model.py
+  infra:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v4
+        with:
+          terraform_version: '1.16.1'
+          terraform_wrapper: false
+      - run: terraform fmt -check -recursive infra
+      - run: terraform -chdir=infra/bootstrap init -backend=false -input=false -lockfile=readonly
+      - run: terraform -chdir=infra/bootstrap validate
+      - run: terraform -chdir=infra init -backend=false -input=false -lockfile=readonly
+      - run: terraform -chdir=infra validate
+      - run: docker compose config --quiet
+  build:
+    needs: [test, infra]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          platforms: linux/amd64
+          load: true
+          tags: triagem-api:ci
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      - name: Smoke test da imagem (mock, sem artefato no CI)
+        run: |
+          docker run -d --name api -p 8000:8000 triagem-api:ci
+          trap 'docker logs api; docker rm -f api' EXIT
+          for _ in $(seq 1 30); do
+            if curl -fsS http://localhost:8000/health; then break; fi
+            sleep 2
+          done
+          curl -fsS http://localhost:8000/health | jq -e '.status == "ok"'
+          curl -fsS http://localhost:8000/predict -H 'Content-Type: application/json' \
+            -d '{"texto":"Routine examination"}' | jq -e '.classe == "normal"'
+          test "$(docker exec api id -u)" = "10001"
+          docker run --rm triagem-api:ci python -m src.train --help
+      - name: Exportar a imagem que passou pelo smoke test
+        if: github.event_name != 'pull_request' && vars.AWS_ROLE_ARN != ''
+        run: docker save --output "$RUNNER_TEMP/triagem-image.tar" triagem-api:ci
+      - uses: actions/upload-artifact@v4
+        if: github.event_name != 'pull_request' && vars.AWS_ROLE_ARN != ''
+        with:
+          name: triagem-image
+          path: ${{ runner.temp }}/triagem-image.tar
+          retention-days: 1
+          compression-level: 0
+          overwrite: true
+  publish:
+    needs: build
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/develop' && vars.AWS_ROLE_ARN != ''
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+      - id: ecr
+        uses: aws-actions/amazon-ecr-login@v2
+      - id: existing
+        name: Verificar tag imutável (permite reexecutar o workflow)
+        env:
+          ECR_REPOSITORY: ${{ vars.ECR_REPOSITORY }}
+        run: |
+          count=$(aws ecr list-images --repository-name "$ECR_REPOSITORY" \
+            --filter tagStatus=TAGGED \
+            --query "length(imageIds[?imageTag=='${GITHUB_SHA}'])" --output text)
+          echo "count=$count" >> "$GITHUB_OUTPUT"
+      - uses: actions/download-artifact@v4
+        if: steps.existing.outputs.count == '0'
+        with:
+          name: triagem-image
+          path: ${{ runner.temp }}
+      - name: Publicar a imagem já testada
+        if: steps.existing.outputs.count == '0'
+        env:
+          ECR_REGISTRY: ${{ steps.ecr.outputs.registry }}
+          ECR_REPOSITORY: ${{ vars.ECR_REPOSITORY }}
+        run: |
+          docker load --input "$RUNNER_TEMP/triagem-image.tar"
+          image_uri="$ECR_REGISTRY/$ECR_REPOSITORY:$GITHUB_SHA"
+          docker tag triagem-api:ci "$image_uri"
+          docker push "$image_uri"

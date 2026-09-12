@@ -1,0 +1,3 @@
+# skl2onnx 1.17 usa APIs removidas nas versões mais recentes de onnx.
+# Mesmas constraints no ambiente local, no CI e na imagem.
+onnx==1.16.1

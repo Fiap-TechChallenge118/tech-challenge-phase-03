@@ -1,0 +1,10 @@
+output "alb_url" { value = try("http://${module.alb[0].dns_name}", null) }
+output "model_bucket" { value = module.s3.models_bucket }
+output "datasets_bucket" { value = module.s3.datasets_bucket }
+output "ecs_cluster" { value = module.ecs.cluster_name }
+output "training_task_definition" { value = module.ecs.training_task_definition }
+output "inference_task_definition" { value = module.ecs.inference_task_definition }
+output "public_subnet_ids" { value = module.networking.public_subnet_ids }
+output "ecs_security_group_id" { value = module.networking.ecs_security_group_id }
+output "training_task_role_arn" { value = module.iam.training_role_arn }
+output "execution_role_arn" { value = module.iam.execution_role_arn }
