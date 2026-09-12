@@ -136,7 +136,12 @@ Arquivos de evidência adicionais devem ser revisados e incluídos se presentes.
 O instalador `AWSCLIV2.pkg` foi preservado e passou a ser ignorado. Não incluir
 `.env`, credenciais, `.terraform/`, planos, tfvars reais ou state no commit.
 
-3. Abrir Actions → CI. Esperado: `lint`, `test`, `infra`, `build`, `publish` verdes no push.
+3. Actions validado em `develop`: run `34722395361` concluiu com `lint`, `test`,
+`infra`, `build` e `publish` verdes. A imagem do commit foi publicada no ECR
+com tag `720e9980f6696bf9d61212bb876ba7ae7c3d7675` e digest
+`sha256:b4b54620b05b6acd2089ee0bb3cb75ac7748cbdb0ce0211b031b23ad62290f75`.
+Em execuções futuras, o esperado é `lint`, `test`, `infra`, `build`, `publish`
+verdes no push.
 Em PR, publicação é pulada; sem `AWS_ROLE_ARN`, publicação também é pulada, mas
 lint/test/build continuam. O build inclui smoke test HTTP e CLI de treino em mock.
 O job `infra` valida formatação, módulos Terraform e Compose sem acessar o state

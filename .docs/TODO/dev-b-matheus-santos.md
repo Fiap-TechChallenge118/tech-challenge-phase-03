@@ -28,10 +28,12 @@ Baseline pendente e método: [docs/latencia_baseline.md](../../docs/latencia_bas
 - [x] Terraform sem diferenças após apply (bootstrap e infra).
 - [x] Smoke Fargate real: download da imagem e `python -m src.train --help`, exit code 0. Evidências em `docs/infra_validacao.md` e outputs em `docs/aws_outputs.json`.
 - [x] CI ampliado com validação Terraform/Compose; publicação reaproveita exatamente a imagem testada via artifact, sem rebuild.
+- [x] Actions executado na `develop`: `lint`, `test`, `infra`, `build` e `publish` verdes em [run 34722395361](https://github.com/Fiap-TechChallenge118/tech-challenge-phase-03/actions/runs/34722395361).
+- [x] Imagem do commit `720e9980f6696bf9d61212bb876ba7ae7c3d7675` publicada no ECR com digest `sha256:b4b54620b05b6acd2089ee0bb3cb75ac7748cbdb0ce0211b031b23ad62290f75`.
 - [x] Recebido `.pkl` do Dev C; SHA-256 e incompatibilidade sklearn 1.9.0 → 1.4.2 registrados.
 - [x] Import `preprocess` contemplado no PYTHONPATH do Docker; validador de versão/contrato implementado.
 - [ ] Receber artefato regenerado com sklearn 1.4.2, medir baseline real e repetir evidência Grafana.
-- [ ] Configurar as três variables GitHub, publicar na develop e obter Actions verde.
+- [x] Configurar as três variables GitHub, publicar na `develop` e obter Actions verde.
 - [ ] Dev C concluir ingestão/upload S3 do treino e entregar ONNX/paridade.
 - [ ] Ativar ALB/Service com modelo real e registrar smoke/benchmark AWS.
 - [ ] Dev A integrar evidências/badge/documentação ao README final e vídeo.

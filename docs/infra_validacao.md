@@ -24,6 +24,8 @@
 | Smoke real no Fargate | Task terminou com exit code 0 |
 | Smoke HTTP AMD64 local | `/health` e `/predict` responderam em mock; UID 10001 |
 | Terraform em diretórios limpos | Bootstrap e infra: init sem backend e validate passaram com lockfile readonly |
+| GitHub Actions | Run `34722395361`: lint, test, infra, build e publish verdes |
+| Imagem publicada pelo CI | Tag `720e9980f6696bf9d61212bb876ba7ae7c3d7675`, digest `sha256:b4b54620b05b6acd2089ee0bb3cb75ac7748cbdb0ce0211b031b23ad62290f75` |
 
 Revisão adicional do CI: `publish` usa o artefato exportado pelo job `build`,
 garantindo que a imagem publicada é a que foi testada. O novo job `infra` valida
