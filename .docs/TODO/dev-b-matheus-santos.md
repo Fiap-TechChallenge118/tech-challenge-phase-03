@@ -20,25 +20,25 @@ Baseline pendente e método: [docs/latencia_baseline.md](../../docs/latencia_bas
 - [x] Instalados Python 3.11, Terraform, actionlint, dependências e ambiente local.
 - [x] Docker ARM64/AMD64 construído; processo UID 10001; API em mock e CLI de treino validadas.
 - [x] 10 testes existentes + 3 testes do benchmark passaram; Ruff/actionlint sem erros.
-- [x] Compose ativo; Prometheus target UP; Grafana com quatro painéis e captura `docs/grafana_dashboard_mock.png`.
+- [x] Compose ativo; Prometheus target UP; Grafana com quatro painéis e captura real `docs/grafana_dashboard.png`.
 - [x] Benchmark recusa mock por padrão. Smoke de 200 chamadas salvo separadamente, sem alegar baseline real.
 - [x] Bootstrap AWS aplicado: ECR, OIDC restrito à develop, bucket de state com locking/versionamento. State migrado para S3.
-- [x] Imagem inicial `bootstrap-20260912` publicada no ECR (AMD64); publicação pelo Actions ainda pendente.
+- [x] Imagem AMD64 do commit `fe55507` publicada pelo Actions no ECR, digest `sha256:16852254240f87721be5e2510700b16899342758e24fc690550b3ab9efa62b31`.
 - [x] Infra base aplicada: rede dedicada, buckets privados/versionados, roles, cluster, Task Definitions e logs com retenção de 14 dias.
 - [x] Terraform sem diferenças após apply (bootstrap e infra).
 - [x] Smoke Fargate real: download da imagem e `python -m src.train --help`, exit code 0. Evidências em `docs/infra_validacao.md` e outputs em `docs/aws_outputs.json`.
 - [x] CI ampliado com validação Terraform/Compose; publicação reaproveita exatamente a imagem testada via artifact, sem rebuild.
-- [x] Actions executado na `develop`: `lint`, `test`, `infra`, `build` e `publish` verdes em [run 34722395361](https://github.com/Fiap-TechChallenge118/tech-challenge-phase-03/actions/runs/34722395361).
-- [x] Imagem do commit `720e9980f6696bf9d61212bb876ba7ae7c3d7675` publicada no ECR com digest `sha256:b4b54620b05b6acd2089ee0bb3cb75ac7748cbdb0ce0211b031b23ad62290f75`.
+- [x] Actions executado na `develop`: `lint`, `test`, `infra`, `build` e `publish` verdes em [run 34723495946](https://github.com/Fiap-TechChallenge118/tech-challenge-phase-03/actions/runs/34723495946).
+- [x] Imagem do commit `fe55507b8bbddab2023bad33566ba80988439729` publicada no ECR com digest `sha256:16852254240f87721be5e2510700b16899342758e24fc690550b3ab9efa62b31`.
 - [x] Recebido `.pkl` do Dev C; SHA-256 e versão sklearn 1.9.0 registrados.
 - [x] Import `preprocess` contemplado no PYTHONPATH do Docker; validador de versão/contrato implementado.
 - [x] Publicar o artefato validado no S3, medir baseline real e repetir evidência Grafana.
 - [x] Configurar as três variables GitHub, publicar na `develop` e obter Actions verde.
 - [ ] Dev C concluir ingestão/upload S3 do treino e entregar ONNX/paridade.
-- [ ] Ativar ALB/Service com modelo real e registrar smoke/benchmark AWS.
+- [x] Ativar ALB/Service com modelo real e registrar smoke/benchmark AWS; URL e resultados em `docs/aws_outputs.json` e `docs/benchmark_aws_raw.json`.
 - [ ] Dev A integrar evidências/badge/documentação ao README final e vídeo.
 
-`enable_inference=false`: não há endpoint ALB ativo enquanto falta um artefato compatível.
+`enable_inference=true`: ALB/Service ativo com o `.pkl` validado; desligamento e rollback estão no guia de operação.
 Tags de expiração não desligam recursos automaticamente; procedimento de encerramento está no guia.
 Autoria Git configurada: Matheus Santos <matheussantosjjj@gmail.com>. TODOs A/C preservados.
 
@@ -238,7 +238,7 @@ A tabela abaixo preserva a auditoria anterior às instalações; o estado atual 
 - [x] `s3`: bucket de datasets (raw/processed) + bucket de artefatos de modelo
 - [x] `ecr`: repositório da imagem única
 - [x] `iam`: execution role + task role do ECS (acesso a S3, ECR, CloudWatch Logs)
-- [ ] `ecs`:
+- [x] `ecs`:
   - Cluster Fargate
   - **Service de inferência**: Task Definition (imagem ECR, env `MODEL_BUCKET`/`MODEL_KEY`/`USE_ONNX`), desired_count ≥ 1, healthcheck `/health`
   - **Task Definition de treino**: mesma imagem, comando override `python src/train.py`
@@ -251,15 +251,15 @@ A tabela abaixo preserva a auditoria anterior às instalações; o estado atual 
 - [x] init/plan/apply do bootstrap e da infra base; ALB/Service aguardam modelo.
 
 #### Smoke test e documentação
-- [ ] `GET http://<alb-dns>/health` → 200; `GET /docs` carrega; `POST /predict` com laudo real retorna `{classe, confianca, tempo_ms}`
-- [ ] Rodar `scripts/benchmark.py --n 100 --url http://<alb-dns>/predict`; registrar latência de produção em `docs/latencia_baseline.md`
+- [x] `GET http://<alb-dns>/health` → 200; `GET /docs` carrega; `POST /predict` com laudo real retorna `{classe, confianca, tempo_ms}`
+- [x] Rodar `scripts/benchmark.py --n 100 --url http://<alb-dns>/predict`; registrar latência de produção em `docs/latencia_baseline.md`
 - [ ] README: URL do ALB + passo a passo de deploy (`terraform apply`) e rollback
 - [ ] Commit: `feat(infra): add Terraform for ECS/Fargate, ALB, ECR, S3`; commit/push por Matheus Santos na `develop`
 
 ### ✅ Definition of Done — ETAPA 10
-- `terraform apply` da infra base concluído ✅; ALB/Service ainda não aplicados.
-- URL do ALB respondendo `/health`, `/docs`, `/predict` ⬜
-- ECS Service baixa o modelo do S3 e serve inferência ⬜
+- `terraform apply` da infra base e do ALB/Service concluído ✅
+- URL do ALB respondendo `/health`, `/docs`, `/predict` ✅
+- ECS Service baixa o modelo do S3 e serve inferência ✅
 - Nenhum segredo hardcoded; README com URL e deploy/rollback ⬜
 - Commit/push por Matheus Santos pendente ⬜
 

@@ -7,7 +7,6 @@ Container e ferramenta de medição validados. O `models/model.pkl` recebido em
 artefato carrega, expõe classes 1–5 e produz probabilidades válidas. O mesmo
 arquivo foi publicado no S3 versionado; SHA-256:
 `3516b921aa882c42a4f1ca7e334d72b9e3f51c1a34287ddcb510e7cf2e7157b1`.
-SHA-256 recebido: `3516b921aa882c42a4f1ca7e334d72b9e3f51c1a34287ddcb510e7cf2e7157b1`.
 O arquivo permanece fora do Git. O baseline abaixo é do `.pkl`, a ser comparado
 com ONNX pelo Dev C na Etapa 9.
 
@@ -15,11 +14,15 @@ com ONNX pelo Dev C na Etapa 9.
 |---|---|
 | p50 / p95 / p99 HTTP | 1,697 / 2,164 / 2,570 ms |
 | Throughput sequencial | 575,988 req/s |
-| Latência na AWS | Pendente de modelo e ativação do serviço |
+| Latência na AWS | 133,608 / 193,421 / 199,013 ms; 7,256 req/s |
 
 Execução real em 12/09/2026: 500 requisições sequenciais, 20 warmup, três
 textos fixos, API local com `/health` em `model=loaded`. Relatório bruto:
 `docs/benchmark_raw.json`.
+
+Execução AWS em 12/09/2026: 100 requisições sequenciais, 20 warmup, ALB
+`http://tc03-triagem-1006816505.us-east-1.elb.amazonaws.com`, `/health` com
+`model=loaded`. Relatório bruto: `docs/benchmark_aws_raw.json`.
 
 Não usar `benchmark_smoke_mock.json` como resultado de otimização: ele contém
 200 chamadas de infraestrutura com o fallback mock e 20 chamadas de aquecimento.
@@ -33,8 +36,8 @@ Serve apenas para validar transporte HTTP, métricas e funcionamento do script.
 - Imagem ARM64 usada no smoke inicial: tamanho reportado pelo engine
   **238.422.257 bytes**, ID
   `sha256:4e560beb4531d58798bc677efe3469ed65a1d73ea357449951056bf10906c66b`.
-- Imagem AWS AMD64: tamanho comprimido reportado pelo ECR **243.483.489 bytes**,
-  digest `sha256:19019b7c11b0a32194dce87af88fe8c1145b7ff28c307c9d26521f18f3c0029a`.
+- Imagem AWS AMD64: tamanho comprimido reportado pelo ECR **243.563.025 bytes**,
+  digest `sha256:16852254240f87721be5e2510700b16899342758e24fc690550b3ab9efa62b31`.
 - Imagens sem modelo embutido; usuário `triagem`, UID/GID 10001.
 - Revalidar estes números se o Dockerfile/dependências forem reconstruídos.
 

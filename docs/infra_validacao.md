@@ -7,7 +7,7 @@
 | Testes existentes (Dev A) | 10 passaram |
 | Testes do benchmark (Dev B) | 3 passaram: percentis, recusa mock, erro HTTP |
 | Ruff | Sem erros no código validado |
-| actionlint | Workflow válido; execução GitHub pendente de autenticação/publicação |
+| actionlint | Workflow válido; execução GitHub `34723495946` verde |
 | Docker ARM64 e AMD64 | Build concluído e imports ML/CLI verificados |
 | Usuário runtime | `uid=10001(triagem) gid=10001(triagem)` |
 | Diretório de treino | `/app/data/processed` gravável pelo usuário runtime |
@@ -27,6 +27,8 @@
 | GitHub Actions | Run `34722395361`: lint, test, infra, build e publish verdes |
 | Imagem publicada pelo CI | Tag `720e9980f6696bf9d61212bb876ba7ae7c3d7675`, digest `sha256:b4b54620b05b6acd2089ee0bb3cb75ac7748cbdb0ce0211b031b23ad62290f75` |
 | Modelo S3 | `models/model.pkl`, 10.870.500 bytes, versão `ey17zfSRXWBRwlFQ.xILZjxl2YSt68EU` |
+| ALB/Service | `tc03-triagem-1006816505.us-east-1.elb.amazonaws.com`, task `running=1`, target `healthy` |
+| Smoke público | `/health` loaded, `/docs` 200, `/predict` 200; AWS p50 133,608 ms, p95 193,421 ms, p99 199,013 ms |
 
 Revisão adicional do CI: `publish` usa o artefato exportado pelo job `build`,
 garantindo que a imagem publicada é a que foi testada. O novo job `infra` valida
@@ -47,8 +49,7 @@ A task terminou; não é um serviço persistente.
 
 ## O que ainda não foi validado
 
-Paridade ONNX, treino/DAG com S3, execução remota do workflow, ALB/Service
-ativo e benchmark da URL pública. O `model.pkl` recebido foi salvo com sklearn
+Paridade ONNX, treino/DAG com S3 e execução remota do workflow. O `model.pkl` recebido foi salvo com sklearn
 1.9.0, agora alinhado ao runtime do projeto. Não há `model.onnx` neste checkout.
 Essas pendências estão detalhadas em `dev-b-operacao.md`.
 

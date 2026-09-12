@@ -87,7 +87,7 @@ na porta 8000 permitida apenas pelo security group do ALB. Inferência prevista:
 memória caso o modelo real demonstre necessidade. Métricas ficam no stack local;
 CloudWatch **Logs**, retenção 14 dias, serve só ao diagnóstico das tasks.
 
-`enable_inference=false` enquanto falta um modelo compatível: ALB e Service não ficam ativos.
+`enable_inference=true` após validação do modelo: ALB e Service ficam ativos durante a janela da demo.
 A definição de inferência exige `model=loaded` no healthcheck do ECS; um HTTP 200
 em modo mock não é aceito como serviço saudável. O treino ainda depende do
 contrato de ingestão/upload do Dev C. A imagem inicial foi publicada diretamente
