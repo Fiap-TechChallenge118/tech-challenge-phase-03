@@ -53,9 +53,9 @@ jobs:
           terraform_version: '1.16.1'
           terraform_wrapper: false
       - run: terraform fmt -check -recursive infra
-      - run: terraform -chdir=infra/bootstrap init -backend=false -input=false -lockfile=readonly
+      - run: terraform -chdir=infra/bootstrap init -backend=false -input=false -upgrade
       - run: terraform -chdir=infra/bootstrap validate
-      - run: terraform -chdir=infra init -backend=false -input=false -lockfile=readonly
+      - run: terraform -chdir=infra init -backend=false -input=false -upgrade
       - run: terraform -chdir=infra validate
       - run: docker compose config --quiet
   build:
