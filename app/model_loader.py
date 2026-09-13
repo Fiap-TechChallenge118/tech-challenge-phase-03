@@ -212,31 +212,27 @@ def _mock_predict() -> tuple[ClasseUrgencia, float]:
 
 
 def _predict_onnx(texto: str) -> tuple[ClasseUrgencia, float]:
-    """Executa inferência com onnxruntime."""
+    """Executa inferência com onnxruntime.
+
+    O artefato ONNX exporta apenas ``tfidf -> clf`` (o pré-processamento em
+    Python não é convertido); aplicamos ``preprocess_texts`` ANTES de alimentar
+    o runtime — o mesmo fluxo validado na checagem de paridade.
+    """
     import numpy as np  # noqa: PLC0415
+    from preprocess import preprocess_texts  # noqa: PLC0415
 
     input_name = _model.get_inputs()[0].name
-    # O pipeline sklearn exportado para ONNX espera array 2-D de strings
-    result = _model.run(None, {input_name: np.array([[texto]])})
+    pre = preprocess_texts([texto])[0]
+    result = _model.run(None, {input_name: np.array([[pre]])})
 
-    # result[0] = label predito (string ou int), result[1] = mapa de probabilidades
-    label_raw = result[0][0]
+    # result[0] = condition_label (1–5), result[1] = matriz de probabilidades
+    # shape [1, n_classes] (exportamos com zipmap=False).
+    label_raw = int(result[0][0])
+    proba = np.asarray(result[1][0], dtype=float)
 
-    if isinstance(label_raw, bytes):
-        label_raw = label_raw.decode()
-
-    classe: ClasseUrgencia = str(label_raw)  # type: ignore[assignment]
-
-    # Probabilidades: dict {label: prob} ou array dependendo do opset
-    if len(result) > 1:
-        prob_map = result[1][0]  # dict ou array
-        if isinstance(prob_map, dict):
-            confianca = float(prob_map.get(label_raw, 1.0))
-        else:
-            idx = _CLASSES.index(classe) if classe in _CLASSES else 0
-            confianca = float(prob_map[idx])
-    else:
-        confianca = 1.0
+    # Converte condition_label → urgência (normal / atenção / urgente)
+    classe: ClasseUrgencia = _CONDITION_TO_URGENCY.get(str(label_raw), "normal")
+    confianca = float(proba.max())
 
     return classe, confianca
 

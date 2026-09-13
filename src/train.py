@@ -72,8 +72,21 @@ def build_pipeline(classifier_name: str, random_state: int) -> Pipeline:
             ("preprocess", FunctionTransformer(preprocess_texts, validate=False)),
             (
                 "tfidf",
+                # Configuração ONNX-compatível (FASE 8): o skl2onnx 1.17
+                # (a) implementa sublinear_tf como log(tf+1) em vez de 1+log(tf)
+                #     — divergência em documentos com termos repetidos (tf>=2);
+                # (b) mapeia o token_pattern default (\b\w\w+\b) para
+                #     [a-zA-Z0-9_]+ com mincharnum=1 — qualquer outro padrão é
+                #     usado verbatim como tokenexp do ONNX.
+                # Logo, sublinear_tf=False + token_pattern explícito
+                # [a-zA-Z0-9_]+ (1+ char, igual ao ONNX) garantem paridade
+                # sklearn <-> ONNX.
                 TfidfVectorizer(
-                    ngram_range=(1, 2), min_df=2, max_df=0.9, sublinear_tf=True
+                    ngram_range=(1, 2),
+                    min_df=2,
+                    max_df=0.9,
+                    sublinear_tf=False,
+                    token_pattern=r"[a-zA-Z0-9_]+",
                 ),
             ),
             ("clf", build_classifier(classifier_name, random_state)),
