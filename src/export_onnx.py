@@ -35,10 +35,9 @@ def export_onnx(pipeline: Pipeline, output: Path):
     Entrada esperada: coluna de texto JÁ pré-processado (StringTensor [None, 1]).
     Saída: rótulo predito (condition_label 1..5) + matriz de probabilidades.
     """
+    import onnx  # noqa: PLC0415
     from skl2onnx import convert_sklearn
     from skl2onnx.common.data_types import StringTensorType
-
-    import onnx  # noqa: PLC0415
 
     steps = dict(pipeline.named_steps)
     sub = Pipeline([("tfidf", steps["tfidf"]), ("clf", steps["clf"])])
@@ -54,7 +53,7 @@ def export_onnx(pipeline: Pipeline, output: Path):
 
 
 def check_parity(pipeline: Pipeline, onnx_path: Path, texts: list[str]) -> dict:
-    """Compara classe predita por ``.pkl`` (texto bruto) vs ``.onnx`` (pré-processado)."""
+    """Compara classe predita pelo ``.pkl`` (bruto) vs ``.onnx`` (pré-processado)."""
     import onnxruntime as ort  # noqa: PLC0415
 
     session = ort.InferenceSession(str(onnx_path), providers=["CPUExecutionProvider"])
