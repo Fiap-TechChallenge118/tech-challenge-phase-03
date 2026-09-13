@@ -129,7 +129,7 @@ O mapeamento é baseado no **nível de risco clínico típico** de cada condiç�
 
 ![Distribuição de urgência](eda_urgency_distribution.png)
 
-**Nota:** o mapeamento reduz o desbalanceamento relativo (de 3,2× entre 5 classes para 2,1× entre 3 classes), facilitando o aprendizado do classificador.
+**Nota:** o mapeamento é aplicado na API **após** a predição (o classificador treina nas 5 condições originais; o balanceamento é tratado com `class_weight='balanced'`).
 
 ---
 

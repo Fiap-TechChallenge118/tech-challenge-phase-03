@@ -72,8 +72,8 @@ A mesma imagem Docker serve inferência (ECS Service, `CMD uvicorn`) e treino (E
 Classificador de texto (NLP) leve que categoriza o laudo médico em **5 condições**
 (`neoplasms`, `digestive system diseases`, `nervous system diseases`,
 `cardiovascular diseases`, `general pathological conditions`) — decisão de escopo
-acordada com o grupo em substituição ao mapeamento em 3 urgências, já que o dataset
-fornece o rótulo de condição nativamente.
+acordada com o grupo: o modelo prevê as 5 condições nativas e a API converte para
+urgência (`normal` / `atenção` / `urgente`).
 
 | Componente | Detalhe |
 |------------|---------|
