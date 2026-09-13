@@ -22,6 +22,11 @@ env/
 *.pkl
 *.onnx
 
+# DAG Airflow — artefatos versionados gerados em runtime
+models/versions.json
+models/metrics_*.json
+models/classification_report_*.txt
+
 # Data (keep folder structure via .gitkeep)
 data/raw/*
 data/processed/*

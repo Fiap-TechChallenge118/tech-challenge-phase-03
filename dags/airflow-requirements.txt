@@ -1,0 +1,8 @@
+# Dependências de ML usadas pelas tasks da DAG (FASE 6).
+#
+# scikit-learn/joblib: mesmas versões do pyproject.toml, para que o modelo treinado
+# no Airflow seja compatível com a API (serialização joblib + versão do sklearn).
+# pandas/numpy já vêm na imagem oficial do Airflow em versões compatíveis — não são
+# re-pinados aqui para não conflitar com os providers (google/snowflake pedem pandas<2.2).
+scikit-learn==1.9.0
+joblib==1.4.2

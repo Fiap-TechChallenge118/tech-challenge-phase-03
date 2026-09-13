@@ -1,0 +1,27 @@
+# Airflow local para a DAG de retreino (FASE 6) — single-node via `airflow standalone`.
+#
+# Uso:
+#   docker compose -f docker-compose.airflow.yml up --build -d
+#   docker compose -f docker-compose.airflow.yml logs airflow | grep -i password  # senha admin
+#   # UI em http://localhost:8080
+#
+# Monta dags/, src/, data/ e models/ para que as tasks rodem contra o projeto real.
+name: triagem-airflow
+services:
+  airflow:
+    build:
+      context: .
+      dockerfile: Dockerfile.airflow
+    image: triagem-airflow:latest
+    command: ["standalone"]
+    environment:
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+      AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "false"
+      PROJECT_DIR: /opt/airflow
+    ports:
+      - "127.0.0.1:8080:8080"
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./src:/opt/airflow/src
+      - ./data:/opt/airflow/data
+      - ./models:/opt/airflow/models

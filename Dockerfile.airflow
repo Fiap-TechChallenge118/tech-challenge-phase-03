@@ -1,0 +1,13 @@
+# Imagem Airflow local para a DAG de retreino (FASE 6).
+#
+# Estende a imagem oficial do Airflow e instala as dependências de ML do projeto
+# nas mesmas versões do pyproject.toml, para que o modelo treinado pela DAG seja
+# compatível com a API (mesmo scikit-learn 1.9.0).
+#
+# A imagem oficial usa virtualenv e seu wrapper de pip recusa instalação como root.
+# Por isso rodamos `pip install` como o usuário `airflow` (default), que é dono do
+# venv — sem `USER root` e sem `--user`.
+FROM apache/airflow:2.10.5-python3.11
+
+COPY dags/airflow-requirements.txt /requirements.txt
+RUN pip install --no-cache-dir -r /requirements.txt
