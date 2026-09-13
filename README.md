@@ -1,7 +1,6 @@
 # Triagem Médica — Sistema de Classificação de Urgência
 
-<!-- Badge do CI será adicionado na ETAPA 6 -->
-<!-- ![CI](https://github.com/ORG/REPO/actions/workflows/ci.yml/badge.svg) -->
+[![CI](https://github.com/Fiap-TechChallenge118/tech-challenge-phase-03/actions/workflows/ci.yml/badge.svg?branch=develop)](https://github.com/Fiap-TechChallenge118/tech-challenge-phase-03/actions/workflows/ci.yml)
 
 > Classificação automática de urgência de laudos médicos (`normal` / `atenção` / `urgente`) via API REST, com pipeline de treino orquestrado, monitoramento e deploy em produção na AWS.
 
@@ -24,10 +23,10 @@ Cliente HTTP
     │
     ▼
 Application Load Balancer (ALB)
-    │  — balanceamento, health check, terminação TLS
+    │  — balanceamento e health check (HTTP na demo)
     ▼
 ECS Fargate Service  (container FastAPI + uvicorn, persistente)
-    │  — baixa model.onnx do S3 no startup, serve /predict /health /metrics
+    │  — baixa model.pkl do S3 no startup, serve /predict /health /metrics
     ▼
 Amazon S3  (artefatos de modelo: model.onnx / model.pkl)
 ```
@@ -239,19 +238,76 @@ Documentação completa, instruções de download e justificativa do mapeamento:
 
 ## Resultados de Latência
 
-<!-- Preencher na ETAPA 9: tabela comparativa sklearn vs ONNX (docs/latencia_comparativo.md). -->
+Baseline do modelo sklearn real em 12/09/2026:
+
+| Ambiente | Requisições | p50 | p95 | p99 | Throughput |
+|---|---:|---:|---:|---:|---:|
+| Docker local | 500 | 1,697 ms | 2,164 ms | 2,570 ms | 575,988 req/s |
+| AWS via ALB | 100 | 133,608 ms | 193,421 ms | 199,013 ms | 7,256 req/s |
+
+As medições incluem HTTP, com 20 chamadas de aquecimento e conexão persistente.
+Condições e dados brutos: [baseline](docs/latencia_baseline.md).
+O comparativo com o modelo otimizado depende da etapa 9 (Dev C).
 
 ## CI/CD
 
-<!-- Preencher na ETAPA 6: badge do workflow + link para o GitHub Actions. -->
+Push e pull request para `develop` executam lint, testes, validação de
+Terraform/Compose e build AMD64 com smoke HTTP. Push/execução manual na
+`develop` também publica a imagem testada no ECR por OIDC, com tag SHA imutável.
+A publicação não atualiza automaticamente o serviço ECS.
+
+[Execução validada: cinco jobs verdes](https://github.com/Fiap-TechChallenge118/tech-challenge-phase-03/actions/runs/34726456994).
+[Captura para a apresentação](docs/ci_execucao.png).
+Variáveis e procedimento de publicação: [guia de operação](docs/dev-b-operacao.md).
 
 ## Monitoramento
 
-<!-- Preencher na ETAPA 8: descrição da stack Prometheus + Grafana e print do dashboard. -->
+`docker compose up -d --build` inicia API, Prometheus e Grafana com datasource e
+dashboard provisionados. O scrape de `/metrics` ocorre a cada 15 segundos.
+O dashboard em [localhost:3000/d/triagem](http://localhost:3000/d/triagem)
+mostra total de predições, p95 de inferência em ms, erros de inferência por
+segundo e distribuição por classe. O contador de erros não inclui HTTP 422.
+
+Para gerar dados com o modelo local em `models/model.pkl`:
+
+```bash
+python scripts/validate_model.py models/model.pkl
+curl -fsS http://localhost:8000/health
+python scripts/benchmark.py --n 200
+```
+
+O benchmark exige `model=loaded`. Aguarde cerca de 30 segundos após a carga
+para atualização dos painéis. JSON: [monitoring/dashboard.json](monitoring/dashboard.json).
+
+![Dashboard com modelo real](docs/grafana_dashboard.png)
 
 ## Deploy em Produção
 
-<!-- Preencher na ETAPA 10: URL do ALB + passo a passo do deploy (terraform apply) e rollback. -->
+Demo: [Swagger no ALB](http://tc03-triagem-1006816505.us-east-1.elb.amazonaws.com/docs).
+Inferência em ECS Fargate, com `models/model.pkl` no S3 e `USE_ONNX=false`.
+O endpoint `/health` foi revalidado com `model=loaded` em 13/09/2026.
+O monitoramento Prometheus/Grafana desta entrega é local.
+
+Na instalação existente, com credenciais AWS válidas, `infra/backend.hcl` e
+`infra/terraform.tfvars` locais configurados:
+
+```bash
+terraform -chdir=infra init -backend-config=backend.hcl
+terraform -chdir=infra plan -out=deploy.tfplan
+terraform -chdir=infra apply deploy.tfplan
+terraform -chdir=infra output -raw alb_url
+```
+
+Antes do deploy, validar/publicar o modelo no S3 e definir `image_uri` com a
+imagem aprovada pelo CI. Para rollback, restaurar a imagem anterior e a chave
+do modelo validado, revisar o plan e aplicar. Instruções completas de bootstrap,
+variáveis, atualização do modelo e rollback: [operação Dev B](docs/dev-b-operacao.md).
+Parâmetros de integração do treino: [outputs AWS](docs/aws_outputs.json).
+
+Janela da demo até **26/09/2026**. Para encerrar o serviço, definir
+`enable_inference=false`, revisar plan e aplicar. Tags de expiração não desligam
+recursos; ECR/S3 permanecem armazenados. Airflow e exportação ONNX ainda dependem
+do Dev C; a Task Definition de treino foi validada apenas com a CLI `--help`.
 
 ## Vídeo STAR
 

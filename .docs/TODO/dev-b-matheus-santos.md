@@ -10,12 +10,12 @@
 
 ---
 
-## Estado da execução — 12/09/2026
+## Estado da execução — 13/09/2026
 
 **Branch de trabalho: `develop` para todo o trabalho e publicação.**
 **Janela AWS autorizada: duas semanas, até 26/09/2026.**
 Instruções, valores GitHub, comandos de operação e handoff: [docs/dev-b-operacao.md](../../docs/dev-b-operacao.md).
-Baseline pendente e método: [docs/latencia_baseline.md](../../docs/latencia_baseline.md).
+Baseline real concluído e método: [docs/latencia_baseline.md](../../docs/latencia_baseline.md).
 
 - [x] Instalados Python 3.11, Terraform, actionlint, dependências e ambiente local.
 - [x] Docker ARM64/AMD64 construído; processo UID 10001; API em mock e CLI de treino validadas.
@@ -41,6 +41,21 @@ Baseline pendente e método: [docs/latencia_baseline.md](../../docs/latencia_bas
 `enable_inference=true`: ALB/Service ativo com o `.pkl` validado; desligamento e rollback estão no guia de operação.
 Tags de expiração não desligam recursos automaticamente; procedimento de encerramento está no guia.
 Autoria Git configurada: Matheus Santos <matheussantosjjj@gmail.com>. TODOs A/C preservados.
+
+## Fechamento — 13/09/2026
+
+Etapas 5, 6, 8 e 10 implementadas e validadas. README recebeu badge, baseline,
+dashboard, URL pública e deploy/rollback. Captura do CI: `docs/ci_execucao.png`
+(run `34726456994`, cinco jobs verdes). Revalidação local: 16 testes, Ruff,
+actionlint, Terraform, Compose saudável, Prometheus UP e API real local/pública.
+Histórico publicado por Matheus Santos: `aec7ebb`, `720e998`, `cb7f529`,
+`fe55507` e `8ab33fa`. Relatório das pendências do projeto:
+[status de entrega](../../docs/status-entrega.md).
+
+A integração da DAG/S3 e a migração para ONNX dependem do Dev C. O contrato
+ECS/S3 já está disponível em `docs/dev-b-operacao.md` e `docs/aws_outputs.json`.
+Não houve revalidação do state AWS em 13/09: sessão CLI expirada; endpoints
+públicos `/health`, `/docs` e `/predict` responderam com modelo real.
 
 ## Auditoria inicial e plano — 12/09/2026
 
@@ -131,12 +146,12 @@ A tabela abaixo preserva a auditoria anterior às instalações; o estado atual 
 #### Documentação e finalização
 - [x] `docs/latencia_baseline.md`: tabela p50/p95/p99 + throughput, specs da máquina, versão da imagem, data
 - [x] Nota: "baseline do `.pkl`; comparado com ONNX na ETAPA 9"
-- [ ] Commit: `feat(docker): add multi-stage Dockerfile and latency baseline`; commit/push por Matheus Santos na `develop`
+- [x] Commit: `feat(docker): add multi-stage Dockerfile and latency baseline`; commit/push por Matheus Santos na `develop`
 
 ### ✅ Definition of Done — ETAPA 5
-- Build/run, não-root e endpoints em mock validados ✅; baseline com modelo real pendente.
-- Tamanho da imagem registrado; `docs/latencia_baseline.md` com tabela e specs ⬜
-- Commit/push por Matheus Santos pendente ⬜
+- Build/run, não-root e endpoints com modelo real validados ✅
+- Tamanho da imagem registrado; `docs/latencia_baseline.md` com tabela e specs ✅
+- Commit/push da implementação por Matheus Santos concluído ✅
 
 ---
 ---
@@ -163,15 +178,15 @@ A tabela abaixo preserva a auditoria anterior às instalações; o estado atual 
 - [x] Configurar Variables `AWS_REGION`, `AWS_ROLE_ARN`, `ECR_REPOSITORY`; sem access keys em Secrets (OIDC).
 
 #### Validação e badge
-- [ ] Push de teste dispara o workflow; jobs lint, test, infra, build e publish verdes na aba Actions
-- [ ] Print da execução verde (para o vídeo)
-- [ ] Badge do workflow no topo do README
-- [ ] Commit: `ci: add GitHub Actions workflow (lint, test, build, push ECR)`; commit/push por Matheus Santos na `develop`
+- [x] Push de teste dispara o workflow; jobs lint, test, infra, build e publish verdes na aba Actions
+- [x] Print da execução verde (para o vídeo)
+- [x] Badge do workflow no topo do README
+- [x] Commit: `ci: add GitHub Actions workflow (lint, test, build, push ECR)`; commit/push por Matheus Santos na `develop`
 
 ### ✅ Definition of Done — ETAPA 6
-- Jobs lint/test/infra/build/publish verdes no Actions ⬜
-- Push para ECR pelo Actions na `develop` ⬜ (push local de bootstrap validado).
-- Badge no README; print salvo ⬜
+- Jobs lint/test/infra/build/publish verdes no Actions ✅
+- Push para ECR pelo Actions na `develop` ✅
+- Badge no README; print salvo em `docs/ci_execucao.png` ✅
 
 ---
 ---
@@ -207,14 +222,14 @@ A tabela abaixo preserva a auditoria anterior às instalações; o estado atual 
 - [x] `monitoring/grafana/provisioning/datasources/prometheus.yml` (datasource Prometheus default)
 - [x] `monitoring/grafana/provisioning/dashboards/dashboard.yml` (provider file)
 - [x] Dashboard com 4 painéis: total requisições, latência p95 (`histogram_quantile`), taxa de erro (`rate`), distribuição por classe (label `classe_predita`)
-- [x] Carga de 200 chamadas HTTP + warmup e painéis validados em mock; repetir com modelo real antes da entrega.
-- [x] JSON versionável e provisioning; print em `docs/grafana_dashboard_mock.png`.
-- [ ] Commit: `feat(monitoring): add docker-compose with Prometheus and Grafana`; commit/push por Matheus Santos na `develop`
+- [x] Carga com classificador real validada; baseline de 500 chamadas + warmup.
+- [x] JSON e provisioning versionados; print real em `docs/grafana_dashboard.png`.
+- [x] Commit: `feat(monitoring): add docker-compose with Prometheus and Grafana`; commit/push por Matheus Santos na `develop`
 
 ### ✅ Definition of Done — ETAPA 8
 - `docker compose up` sobe os 3 serviços sem passo manual ✅
 - `/metrics` e dashboard com 4 painéis validados com tráfego real no classificador real ✅; captura final salva em `docs/grafana_dashboard.png`.
-- JSON e print prontos; commit por Matheus Santos pendente.
+- JSON e print real publicados por Matheus Santos ✅
 
 ---
 ---
@@ -248,26 +263,26 @@ A tabela abaixo preserva a auditoria anterior às instalações; o estado atual 
 #### Composição e apply
 - [x] `infra/main.tf` compõe os módulos; `variables.tf`, `outputs.tf` (expor DNS do ALB, nomes de bucket, repo ECR)
 - [x] `backend.tf`: state remoto no S3 (recomendado) ou local para a demo
-- [x] init/plan/apply do bootstrap e da infra base; ALB/Service aguardam modelo.
+- [x] init/plan/apply do bootstrap, infra base e ALB/Service com modelo real concluídos.
 
 #### Smoke test e documentação
 - [x] `GET http://<alb-dns>/health` → 200; `GET /docs` carrega; `POST /predict` com laudo real retorna `{classe, confianca, tempo_ms}`
 - [x] Rodar `scripts/benchmark.py --n 100 --url http://<alb-dns>/predict`; registrar latência de produção em `docs/latencia_baseline.md`
-- [ ] README: URL do ALB + passo a passo de deploy (`terraform apply`) e rollback
-- [ ] Commit: `feat(infra): add Terraform for ECS/Fargate, ALB, ECR, S3`; commit/push por Matheus Santos na `develop`
+- [x] README: URL do ALB + passo a passo de deploy (`terraform apply`) e rollback
+- [x] Commit: `feat(infra): add Terraform for ECS/Fargate, ALB, ECR, S3`; commit/push por Matheus Santos na `develop`
 
 ### ✅ Definition of Done — ETAPA 10
 - `terraform apply` da infra base e do ALB/Service concluído ✅
 - URL do ALB respondendo `/health`, `/docs`, `/predict` ✅
 - ECS Service baixa o modelo do S3 e serve inferência ✅
-- Nenhum segredo hardcoded; README com URL e deploy/rollback ⬜
-- Commit/push por Matheus Santos pendente ⬜
+- Configuração sensível fora do Git; README com URL e deploy/rollback ✅
+- Commit/push da implementação por Matheus Santos concluído ✅
 
 ---
 
 ## ⚠️ Pontos em aberto — Dev B
 - [x] State remoto S3 com versionamento, criptografia e locking nativo; bootstrap separado.
 - [x] Nomes das variáveis de ambiente do modelo (`MODEL_BUCKET`/`MODEL_KEY`) — definidos e documentados no `.env.example` pelo Dev A
-- [ ] Task Definition de treino: comando e variáveis S3 — alinhar com Dev C (ETAPA 7)
+- [x] Task Definition de treino: comando, variáveis S3, roles e rede documentados para o Dev C. Integração/execução da DAG permanece na ETAPA 7.
 - [x] Versões fixadas: Prometheus 3.5.0 e Grafana 12.1.1.
 - [x] Janela autorizada até 26/09/2026; configuração mínima sem NAT Gateway, retenção 14 dias. Encerramento documentado, não automático.

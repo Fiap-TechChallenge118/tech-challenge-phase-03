@@ -49,7 +49,7 @@ A task terminou; não é um serviço persistente.
 
 ## O que ainda não foi validado
 
-Paridade ONNX, treino/DAG com S3 e execução remota do workflow. O `model.pkl` recebido foi salvo com sklearn
+Paridade ONNX e treino/DAG com S3. O workflow remoto já passou. O `model.pkl` recebido foi salvo com sklearn
 1.9.0, agora alinhado ao runtime do projeto. Não há `model.onnx` neste checkout.
 Essas pendências estão detalhadas em `dev-b-operacao.md`.
 

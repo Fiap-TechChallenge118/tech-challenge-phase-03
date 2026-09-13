@@ -1,5 +1,9 @@
 # Operação e handoff — Dev B
 
+Fechamento revalidado em 13/09/2026: [status e pendências do projeto](status-entrega.md).
+Badge, baseline, dashboard e instruções de deploy/rollback já foram integrados
+ao README. Captura do CI verde: `ci_execucao.png` (run `34726456994`).
+
 Escopo: Docker/baseline, CI, monitoramento e infraestrutura AWS (etapas 5, 6, 8 e
 10). Trabalho sempre na **develop**. API/testes/README final/vídeo são do Dev A;
 modelo, dataset, Airflow e ONNX são do Dev C. Fonte de requisitos:
