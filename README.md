@@ -26,7 +26,7 @@ Application Load Balancer (ALB)
     │  — balanceamento e health check (HTTP na demo)
     ▼
 ECS Fargate Service  (container FastAPI + uvicorn, persistente)
-    │  — baixa model.pkl do S3 no startup, serve /predict /health /metrics
+    │  — baixa model.onnx do S3 no startup, serve /predict /health /metrics
     ▼
 Amazon S3  (artefatos de modelo: model.onnx / model.pkl)
 ```
@@ -103,6 +103,26 @@ python src/train.py \
     --model models/model.pkl \
     --classifier all --test-size 0.2 --random-state 42
 ```
+
+### Inferência ONNX na API
+
+A API usa ONNX por padrão, com o mesmo pré-processamento Python do treino.
+Gere o artefato antes de iniciar o serviço local:
+
+```bash
+python -m src.export_onnx --model models/model.pkl --output models/model.onnx --data ""
+docker compose up --build -d
+```
+
+Com o dataset disponível, use `--data data/raw/medical_tc_test.csv --n 200`
+para verificar a paridade durante a exportação. Em produção, disponibilize
+`models/model.onnx` no bucket configurado em `MODEL_BUCKET` antes do deploy.
+O artefato é gerado localmente e não é versionado no Git.
+
+Para usar sklearn explicitamente, configure `USE_ONNX=false` e
+`MODEL_PATH=models/model.pkl` (`MODEL_FILE=model.pkl` no Docker Compose), ou
+`MODEL_KEY=models/model.pkl` no S3. Revise também essas variáveis em arquivos
+`.env` e `.tfvars` existentes, que podem sobrescrever os novos padrões.
 
 ### Usar o modelo
 

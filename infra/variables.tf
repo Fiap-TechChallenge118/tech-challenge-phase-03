@@ -21,11 +21,11 @@ variable "enable_inference" {
 }
 variable "model_key" {
   type    = string
-  default = "models/model.pkl"
+  default = "models/model.onnx"
 }
 variable "use_onnx" {
   type    = bool
-  default = false
+  default = true
 }
 variable "training_command" {
   description = "Contrato inicial: Dev C implementará ingestão S3/upload na DAG ou wrapper."

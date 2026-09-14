@@ -42,7 +42,7 @@ def load_model() -> None:
     """Carrega o modelo no startup. Ativa mock em último caso."""
     global _model, _model_type
 
-    use_onnx = os.getenv("USE_ONNX", "false").lower() == "true"
+    use_onnx = os.getenv("USE_ONNX", "true").lower() == "true"
     bucket = os.getenv("MODEL_BUCKET", "").strip()
 
     if bucket:
@@ -80,7 +80,8 @@ def model_status() -> str:
 
 def _load_from_s3(use_onnx: bool, bucket: str) -> None:
     """Baixa o artefato do S3 e carrega o modelo."""
-    key = os.getenv("MODEL_KEY", "models/model.onnx")
+    default_key = "models/model.onnx" if use_onnx else "models/model.pkl"
+    key = os.getenv("MODEL_KEY", default_key)
     region = os.getenv("AWS_REGION", "us-east-1")
     suffix = ".onnx" if use_onnx else ".pkl"
 
@@ -219,7 +220,8 @@ def _predict_onnx(texto: str) -> tuple[ClasseUrgencia, float]:
     o runtime — o mesmo fluxo validado na checagem de paridade.
     """
     import numpy as np  # noqa: PLC0415
-    from preprocess import preprocess_texts  # noqa: PLC0415
+
+    from src.preprocess import preprocess_texts  # noqa: PLC0415
 
     input_name = _model.get_inputs()[0].name
     pre = preprocess_texts([texto])[0]

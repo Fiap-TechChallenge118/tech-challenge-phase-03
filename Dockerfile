@@ -13,7 +13,7 @@ ENV PATH="/opt/venv/bin:$PATH" \
     PYTHONPATH="/app:/app/src" \
     PYTHONUNBUFFERED=1 PYTHONDONTWRITEBYTECODE=1 \
     LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8 \
-    MODEL_PATH=/app/models/model.pkl USE_ONNX=false
+    MODEL_PATH=/app/models/model.onnx USE_ONNX=true
 # O operador StringNormalizer do ONNX (gerado pelo TfidfVectorizer) exige um
 # locale real (en_US.UTF-8). A imagem slim não o gera por padrão; sem isso a
 # inferência ONNX falha com "locale::facet::_S_create_c_locale name not valid".

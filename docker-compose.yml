@@ -7,8 +7,8 @@ services:
       - path: .env
         required: false
     environment:
-      MODEL_PATH: /app/models/${MODEL_FILE:-model.pkl}
-      USE_ONNX: ${USE_ONNX:-false}
+      MODEL_PATH: /app/models/${MODEL_FILE:-model.onnx}
+      USE_ONNX: ${USE_ONNX:-true}
     ports:
       - "127.0.0.1:8000:8000"
     volumes:
