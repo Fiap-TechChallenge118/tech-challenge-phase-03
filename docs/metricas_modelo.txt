@@ -1,0 +1,86 @@
+# Métricas do Modelo — Triagem Médica (ETAPA 2)
+
+Classificador de condição médica (5 classes) a partir do texto do laudo.
+Dataset: [Medical Abstracts TC Corpus](https://www.kaggle.com/datasets/saharalaa/medical-abstracts-tc-corpus) (Kaggle).
+
+## Classes
+
+| Label | Condição |
+|------:|:---------|
+| 1 | neoplasms |
+| 2 | digestive system diseases |
+| 3 | nervous system diseases |
+| 4 | cardiovascular diseases |
+| 5 | general pathological conditions |
+
+Distribuição desbalanceada (`general pathological` é a classe majoritária), por
+isso a métrica de seleção do melhor modelo é **macro-F1** (média por classe).
+
+## Pipeline
+
+```
+Pipeline([
+    ('preprocess', FunctionTransformer(preprocess_texts)),
+    ('tfidf',      TfidfVectorizer(ngram_range=(1,2), min_df=2, max_df=0.9, sublinear_tf=True)),
+    ('clf',        LogisticRegression / LinearSVC / RandomForest),
+])
+```
+
+- Split treino/teste **estratificado** 80/20 (`random_state=42`).
+- Grid-search (`cv=3`, `scoring='f1_macro'`) nos modelos lineares:
+  `C ∈ {0.1, 0.3, 1.0, 3.0, 10.0}` × `class_weight ∈ {None, balanced}`.
+- Melhor modelo escolhido por **macro-F1** (desempate por weighted-F1).
+
+## Resultado no split de teste (2.310 laudos)
+
+| Classificador | Acurácia | Macro-F1 | Weighted-F1 |
+|---------------|---------:|---------:|------------:|
+| RandomForest (default) | 0.486 | 0.440 | 0.474 |
+| LinearSVC (C=0.1, balanced) | 0.595 | 0.594 | 0.583 |
+| **LogisticRegression (C=0.3, balanced)** | **0.607** | **0.609** | **0.589** |
+
+## F1 por classe (modelo final — LogisticRegression)
+
+```
+                                 precision    recall  f1-score   support
+
+                      neoplasms       0.71      0.77      0.74       506
+      digestive system diseases       0.51      0.76      0.61       239
+        nervous system diseases       0.49      0.68      0.57       308
+        cardiovascular diseases       0.65      0.78      0.71       488
+general pathological conditions       0.62      0.31      0.41       769
+
+                       accuracy                           0.61      2310
+                      macro avg       0.60      0.66      0.61      2310
+                   weighted avg       0.62      0.61      0.59      2310
+```
+
+## Holdout (test.csv oficial — 2.888 laudos, nunca visto no treino)
+
+| Métrica | Valor |
+|---------|------:|
+| Acurácia | 0.604 |
+| Macro-F1 | 0.605 |
+| Weighted-F1 | 0.580 |
+
+Desempenho praticamente igual ao do split de teste → boa generalização (sem overfitting).
+
+> `class_weight='balanced'` elevou as classes minoritárias (`digestive` 0.42→0.61,
+> `nervous` 0.39→0.57), ao custo do recall da classe majoritária
+> (`general pathological` 0.44→0.41) — trade-off clássico de rebalanceamento.
+
+## Como reproduzir
+
+```bash
+python scripts/download_data.py
+
+python src/train.py \
+    --data data/raw/medical_tc_train.csv \
+    --test-data data/raw/medical_tc_test.csv \
+    --model models/model.pkl \
+    --classifier all \
+    --test-size 0.2 \
+    --random-state 42
+```
+
+Métricas completas por classificador (JSON): `models/metrics.json`.

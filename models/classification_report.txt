@@ -1,0 +1,11 @@
+                                 precision    recall  f1-score   support
+
+                      neoplasms       0.71      0.76      0.73       506
+      digestive system diseases       0.51      0.76      0.61       239
+        nervous system diseases       0.50      0.68      0.57       308
+        cardiovascular diseases       0.66      0.76      0.71       488
+general pathological conditions       0.60      0.34      0.43       769
+
+                       accuracy                           0.61      2310
+                      macro avg       0.60      0.66      0.61      2310
+                   weighted avg       0.61      0.61      0.59      2310
