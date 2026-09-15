@@ -1,6 +1,6 @@
 # TODO — Geral do Time
 
-Revisado em 14/09/2026 contra [os requisitos oficiais](../content/tech-challenge.md).
+Revisado em 15/09/2026 contra [os requisitos oficiais](../content/tech-challenge.md).
 Evidências e limites: [auditoria de entrega](../../docs/status-entrega.md).
 `[x]` indica entrega com evidência; `[ ]` indica pendência ou confirmação ausente.
 Histórico dos checklists anteriores permanece no Git.
@@ -36,7 +36,7 @@ Histórico dos checklists anteriores permanece no Git.
 
 - [ ] Integrar a DAG com ECS RunTask e download/upload S3; não é requisito obrigatório do enunciado.
 - [ ] Definir contrato de promoção automática do ONNX após retreino; a DAG atual salva somente `.pkl` local.
-- [ ] Executar notebook EDA e salvar outputs; arquivo existe, mas não contém execução salva.
+- [x] Notebook EDA executado: 16 células, outputs salvos e quatro gráficos renovados.
 - [ ] Confirmar branch de submissão e proteção/acessos correspondentes.
 - [ ] Confirmar responsável pelo encerramento AWS e executar ao fim da janela.
 
@@ -45,13 +45,13 @@ Histórico dos checklists anteriores permanece no Git.
 | Etapa interna | Responsável | Estado auditado |
 |---|---|---|
 | 0 — Fundação | Dev A | Estrutura/repositório público entregues; proteção atual não revalidada |
-| 1 — EDA | Dev C | Notebook, resumo e gráficos presentes; execução do notebook pendente |
+| 1 — EDA | Dev C | Notebook executado, outputs salvos e gráficos renovados |
 | 2 — Modelo | Dev C | Entregue; retreino reproduzido nesta revisão |
 | 3 — API | Dev A | Entregue; runtime ONNX integrado |
 | 4 — Testes | Dev A | Entregue; 17 testes incluindo scripts de validação |
 | 5 — Docker/baseline | Dev B | Entregue |
 | 6 — CI/CD | Dev B | Entregue na develop |
-| 7 — Airflow | Dev C | Entregue localmente; extensão ECS/S3 pendente |
+| 7 — Airflow | Dev C | Nova execução local comprovada; extensão ECS/S3 pendente |
 | 8 — Monitoramento | Dev B | Entregue; stack existente revalidada |
 | 9 — ONNX | Dev C | Entregue; paridade completa e deploy validados |
 | 10 — AWS | Dev B | Entregue; ONNX em produção |

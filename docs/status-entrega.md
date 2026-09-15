@@ -1,4 +1,4 @@
-# Auditoria de entrega — 14/09/2026
+# Auditoria de entrega — atualizada em 15/09/2026
 
 Fonte: [requisitos oficiais](../.docs/content/tech-challenge.md).
 Revisão do código `d447ec1`, TODOs, CI, artefatos, dados oficiais e ambiente AWS.
@@ -20,9 +20,9 @@ antigas do README e dos TODOs; os limites de validação estão indicados abaixo
 | Baseline local de latência | Atendido | `docs/latencia_baseline.md` e `docs/benchmark_raw.json` |
 | GitHub Actions com ≥2 automações no push | Atendido em develop | Lint, test, infra, build e publish verdes no [run 34908089669](https://github.com/Fiap-TechChallenge118/tech-challenge-phase-03/actions/runs/34908089669) |
 | Workflow YAML + histórico semântico | Atendido | `.github/workflows/ci.yml`; commits recentes `feat`, `fix`, `docs` |
-| DAG funcional: ingestão → treino → salvamento | Atendido por implementação e evidência registrada | `dags/retrain_triagem_dag.py`; `docs/dag_execucao.png` inspecionado: três tasks success. Execução histórica em 13/09; não reexecutada nesta auditoria |
+| DAG funcional: ingestão → treino → salvamento | Atendido por implementação e evidência registrada | `dags/retrain_triagem_dag.py`; `docs/dag_execucao.png` inspecionado: três tasks success. Nova execução `evidence-20260914-onnx` concluída; estados em `docs/airflow_execucao.json` |
 | Scikit-learn, FastAPI, prometheus-client e Airflow | Atendido | `pyproject.toml`, `Dockerfile.airflow` e requirements da DAG |
-| Compose API + Prometheus + Grafana | Atendido no ambiente existente | Três containers ativos; API saudável, target Prometheus UP, Grafana database OK; não equivale a clone limpo |
+| Compose API + Prometheus + Grafana | Atendido no ambiente existente | Imagem local reconstruída com ONNX; três containers ativos, target UP e nova captura com tráfego real; não equivale a clone limpo |
 | Métricas e ≥3 painéis; print/JSON | Atendido | `/metrics`, `monitoring/dashboard.json` com quatro painéis e `docs/grafana_dashboard.png` |
 | Classificador treinado; ≥2.000 amostras | Atendido | 14.438 linhas; treino reproduzido com métricas iguais às versionadas |
 | Técnica de otimização + modelo otimizado | Atendido | `src/export_onnx.py`; ONNX publicado; paridade 2.888/2.888; [deploy](deploy_onnx.md) |
@@ -69,8 +69,7 @@ considera evidência histórica equivalente a uma nova execução.
   grava localmente e não exporta ONNX. A Task Definition de treino existe,
   mas não fornece ingestão/upload automáticos. A DAG local satisfaz o exemplo
   de pipeline simples exigido pelo enunciado.
-- **Notebook EDA:** presente, com 16 células de código, todas sem execution_count
-  e sem outputs. Executar e salvar evidência de execução continua pendente.
+- **Notebook EDA:** 16 células de código executadas sem erros; outputs salvos e quatro gráficos regenerados/inspecionados.
 - **Branch protection e acessos do time:** marcações antigas não foram tratadas
   como confirmação atual; revisar a configuração da branch final.
 - **Segredos:** busca por histórico de `*.env`, `*.key`, `*.tfstate*` não retornou
@@ -87,8 +86,9 @@ considera evidência histórica equivalente a uma nova execução.
 - Endpoints públicos e cinco predições equivalentes ao sklearn aprovados.
 - Benchmark público: 100 chamadas, p95 197,117 ms incluindo rede; não comparar
   como ganho isolado com o baseline de outro dia.
-- Stack local existente: Prometheus UP, Grafana OK; imagem local anterior
-  preservada. Runtime ONNX atual verificado em produção.
+- Stack local reconstruída com ONNX: Prometheus UP, Grafana OK e captura renovada.
+- Airflow reexecutado com três tasks success; notebook executado e gráficos renovados.
+- [Registro das evidências atualizadas](evidencias_atualizadas.md).
 
 Evidência de produção e rollback: [deploy_onnx.md](deploy_onnx.md).
 Checklists atuais: [geral](../.docs/TODO/geral.md),

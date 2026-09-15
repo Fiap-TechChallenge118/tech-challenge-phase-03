@@ -1,3 +1,11 @@
+# Execução Airflow — evidência atualizada em 15/09/2026
+
+Run `evidence-20260914-onnx`: três tarefas em **success**, encerrado em
+15/09 às 01:09:26 UTC (14/09 às 22:09:26 em São Paulo).
+[Estados extraídos do Airflow](airflow_execucao.json).
+
+![Grafo da nova execução concluída](dag_execucao.png)
+
 ## O que a DAG faz
 
 ```

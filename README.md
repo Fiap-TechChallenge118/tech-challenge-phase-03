@@ -292,8 +292,10 @@ Terraform/Compose e build AMD64 com smoke HTTP. Push/execução manual na
 `develop` também publica a imagem testada no ECR por OIDC, com tag SHA imutável.
 A publicação não atualiza automaticamente o serviço ECS.
 
-[Execução validada: cinco jobs verdes](https://github.com/Fiap-TechChallenge118/tech-challenge-phase-03/actions/runs/34908089669).
-[Captura para a apresentação](docs/ci_execucao.png).
+[Execução validada: cinco jobs verdes](https://github.com/Fiap-TechChallenge118/tech-challenge-phase-03/actions/runs/34914969894).
+Captura renovada: execução `34914969894`, commit `341746d`, cinco jobs verdes.
+
+![CI com lint, test, infra, build e publish aprovados](docs/ci_execucao.png)
 Variáveis e procedimento de publicação: [guia de operação](docs/dev-b-operacao.md).
 
 ## Monitoramento
@@ -314,7 +316,32 @@ python scripts/benchmark.py --n 200
 O benchmark exige `model=loaded`. Aguarde cerca de 30 segundos após a carga
 para atualização dos painéis. JSON: [monitoring/dashboard.json](monitoring/dashboard.json).
 
-![Dashboard com modelo real](docs/grafana_dashboard.png)
+![Dashboard atualizado com inferência ONNX real](docs/grafana_dashboard.png)
+
+Captura do tráfego de 14/09/2026, 22:08–22:13 (America/Sao_Paulo), com a
+imagem local reconstruída do código `341746d` e ONNX carregado. O p95 no
+Grafana é uma estimativa do histograma de inferência; o benchmark mede HTTP.
+O [benchmark local ONNX](docs/benchmark_local_onnx.json) de 500 chamadas
+registrou p50 **3,647 ms**, p95 **5,944 ms** e p99 **7,506 ms**. O ambiente
+estava compartilhado com Airflow; estes números não substituem o comparativo
+controlado da etapa de otimização.
+
+## Evidência do retreino Airflow
+
+A execução `evidence-20260914-onnx` terminou em 14/09/2026 às 22:09:26
+(America/Sao_Paulo), com `ingest`, `train` e `save` em **success**.
+O nome da execução identifica a sessão de validação ONNX; a DAG gera/versiona
+`.pkl` localmente, e a exportação ONNX permanece um passo separado.
+
+![Nova execução da DAG com as três tarefas concluídas](docs/dag_execucao.png)
+
+[Estados das tarefas](docs/airflow_execucao.json) ·
+[Instruções Airflow](docs/dag_execucao.md) ·
+[Registro das capturas e validações](docs/evidencias_atualizadas.md).
+
+O [notebook EDA](notebooks/01_eda.ipynb) foi executado do início ao fim, com
+16 células de código concluídas e outputs salvos. Os quatro gráficos em
+[EDA — resumo](docs/eda_resumo.md) foram regenerados e inspecionados.
 
 ## Deploy em Produção
 

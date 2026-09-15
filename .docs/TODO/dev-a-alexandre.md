@@ -1,6 +1,6 @@
 # TODO — Dev A: Alexandre Araújo
 
-Revisão de 14/09/2026. Responsável por fundação, API, testes, README e vídeo.
+Revisão de 15/09/2026. Responsável por fundação, API, testes, README e vídeo.
 Fonte: [requisitos oficiais](../content/tech-challenge.md).
 Evidências: [auditoria](../../docs/status-entrega.md).
 
@@ -40,7 +40,7 @@ do código; confirmar administrativamente quando necessário.
 ## ETAPA 11 — Consolidação e vídeo
 
 - [x] README com visão geral, arquitetura real, execução, CI, monitoramento e URL de produção.
-- [x] Atualização do estado ONNX e comparação de latência; links das evidências.
+- [x] Estado ONNX atualizado; novos prints do CI, Grafana e Airflow inseridos no README; EDA regenerada e notebook executado.
 - [x] Distinção entre DAG local entregue e integração futura ECS/S3.
 - [ ] Reproduzir todos os comandos em clone limpo (incluindo obtenção dos dados/modelo).
 - [ ] Revisar todos os links públicos sem autenticação.

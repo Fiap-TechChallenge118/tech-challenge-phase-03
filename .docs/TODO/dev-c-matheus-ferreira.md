@@ -1,6 +1,6 @@
 # TODO — Dev C: Matheus Ferreira
 
-Revisão de 14/09/2026. Dataset, EDA, modelo, Airflow e ONNX.
+Revisão de 15/09/2026. Dataset, EDA, modelo, Airflow e ONNX.
 Fonte: [requisitos oficiais](../content/tech-challenge.md).
 Evidências: [auditoria](../../docs/status-entrega.md).
 
@@ -12,7 +12,7 @@ Evidências: [auditoria](../../docs/status-entrega.md).
 - [x] Mapeamento das cinco condições para três urgências documentado e aplicado na API.
 - [x] Auditoria reproduziu 14.438 linhas, zero nulos e 3.211 repetições de texto.
 - [x] Corrigida documentação: 2.929 textos com múltiplos rótulos e 988 textos comuns entre treino/teste oficiais.
-- [ ] Executar o notebook do início ao fim e salvar outputs; nenhuma célula tem execução salva.
+- [x] Notebook executado do início ao fim: 16 células concluídas, outputs salvos e quatro gráficos renovados.
 - [ ] Avaliar split agrupado por texto e tratamento dos múltiplos rótulos como melhoria de avaliação; métricas atuais são do split oficial.
 
 Estratificação não elimina sobreposição de textos. Não declarar duplicatas
@@ -41,8 +41,8 @@ apenas na mesma classe nem ausência de vazamento com base nesse split.
 - [x] `train`: BashOperator chama `python -m src.train --classifier logistic`.
 - [x] `save`: versiona `.pkl`, métricas e relatório locais; atualiza manifesto.
 - [x] Encadeamento `ingest >> train >> save`.
-- [x] Print `docs/dag_execucao.png` mostra três tasks success (13/09); instruções documentadas.
-- [ ] Reexecutar em clone limpo para aceite final; execução Airflow não repetida nesta auditoria.
+- [x] Print `docs/dag_execucao.png` renovado: run `evidence-20260914-onnx` com três tasks success; estados em `docs/airflow_execucao.json`.
+- [ ] Reexecutar em clone limpo para aceite final; a DAG foi reexecutada com sucesso no checkout atual.
 
 ### Extensão interna ECS/S3 — ainda não entregue
 
@@ -69,6 +69,7 @@ O Compose atual não tem volume persistente para o banco/metadados Airflow.
 
 ## Pendências finais do responsável
 
-- [ ] Executar/salvar notebook e reproduzir Airflow em clone limpo.
+- [x] Executar/salvar notebook e renovar prints da DAG/EDA.
+- [ ] Reproduzir Airflow em clone limpo.
 - [ ] Confirmar com o time se a extensão ECS/S3 fica fora da entrega acadêmica atual.
 - [ ] Apoiar Dev A no vídeo com grafo Airflow e comparação de latência.

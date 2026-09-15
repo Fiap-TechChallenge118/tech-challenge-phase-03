@@ -2,7 +2,9 @@
 
 **Dataset:** Medical Abstracts TC Corpus  
 **Notebook:** [`notebooks/01_eda.ipynb`](../notebooks/01_eda.ipynb)  
-**Data:** 2026-09-08
+**Análise inicial:** 2026-09-08
+
+**Evidências renovadas:** 2026-09-15 — notebook executado, outputs salvos e quatro gráficos regenerados.
 
 ---
 

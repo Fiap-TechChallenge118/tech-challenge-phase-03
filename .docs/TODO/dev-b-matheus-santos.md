@@ -1,6 +1,6 @@
 # TODO — Dev B: Matheus Santos
 
-Revisão de 14/09/2026. Infraestrutura, CI/CD, observabilidade e AWS.
+Revisão de 15/09/2026. Infraestrutura, CI/CD, observabilidade e AWS.
 Branch de trabalho: `develop`. Janela AWS: até 26/09/2026.
 Fonte: [requisitos oficiais](../content/tech-challenge.md).
 [Operação](../../docs/dev-b-operacao.md) · [deploy ONNX](../../docs/deploy_onnx.md)
@@ -23,7 +23,7 @@ Fonte: [requisitos oficiais](../content/tech-challenge.md).
 - [x] ECR com OIDC, tag SHA e publicação da mesma imagem aprovada no smoke.
 - [x] Variables AWS configuradas; sem access keys no workflow.
 - [x] Release `d447ec1`: cinco jobs verdes no [run 34908089669](https://github.com/Fiap-TechChallenge118/tech-challenge-phase-03/actions/runs/34908089669).
-- [x] Badge, link Actions e captura histórica no README/docs.
+- [x] Badge, link Actions e nova captura do run `34914969894` (commit `341746d`) no README/docs.
 - [ ] Se o time escolher `master` para submissão, configurar gatilhos/checks dessa branch antes de integrar.
 
 ## ETAPA 8 — Monitoramento
@@ -33,7 +33,7 @@ Fonte: [requisitos oficiais](../content/tech-challenge.md).
 - [x] Docker Compose API + Prometheus + Grafana, rede e volumes de dados.
 - [x] Datasource/dashboard provisionados; quatro painéis (≥3 exigidos).
 - [x] `monitoring/dashboard.json` e print real `docs/grafana_dashboard.png`.
-- [x] Stack existente revalidada: API saudável, target UP e Grafana database OK.
+- [x] Stack reconstruída com ONNX: API saudável, target UP, Grafana OK e nova captura com tráfego real.
 - [ ] Reprodução de clone limpo com o ONNX atual, em conjunto com a revisão final do time.
 
 ## ETAPA 10 — Terraform/AWS
