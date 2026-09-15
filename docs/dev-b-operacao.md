@@ -1,5 +1,11 @@
 # Operação e handoff — Dev B
 
+> Atualização de 14/09/2026: ONNX em produção, task revision 3.
+> Consulte [deploy atual](deploy_onnx.md) e [auditoria de entrega](status-entrega.md).
+> Os registros de 12–13/09 abaixo são históricos; referências a ONNX/DAG
+> ausentes e ao `.pkl` em produção descrevem o estado anterior.
+
+
 Fechamento revalidado em 13/09/2026: [status e pendências do projeto](status-entrega.md).
 Badge, baseline, dashboard e instruções de deploy/rollback já foram integrados
 ao README. Captura do CI verde: `ci_execucao.png` (run `34726456994`).

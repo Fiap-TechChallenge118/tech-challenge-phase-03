@@ -1,5 +1,11 @@
 # Evidências técnicas — Dev B — 12/09/2026
 
+> Atualização de 14/09/2026: ONNX em produção, task revision 3.
+> Consulte [deploy atual](deploy_onnx.md) e [auditoria de entrega](status-entrega.md).
+> Os registros de 12–13/09 abaixo são históricos; referências a ONNX/DAG
+> ausentes e ao `.pkl` em produção descrevem o estado anterior.
+
+
 ## Validação executada
 
 | Verificação | Resultado |

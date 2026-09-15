@@ -14,7 +14,12 @@ ingest  ──▶  train  ──▶  save
 
 ## Como executar localmente
 
-Pré-requisito: Docker.
+Pré-requisitos: Docker e CSVs em `data/raw/`. Gere os dados antes de subir:
+
+```bash
+python -m pip install -c constraints.txt -e ".[dev]"
+python scripts/download_data.py
+```
 
 ```bash
 docker compose -f docker-compose.airflow.yml up --build -d
@@ -54,5 +59,10 @@ docker compose -f docker-compose.airflow.yml up -d
 docker compose -f docker-compose.airflow.yml down
 ```
 
-> `down` sem `-v` preserva o estado do Airflow (DB SQLite) no volume do container,
-> permitindo reexecutar sem re-inicializar. Para recomeçar do zero: `down -v`.
+> Este Compose não define volume para o banco/metadados do Airflow.
+> `down` remove o container e perde esse estado. Dados/modelos permanecem nos
+> bind mounts do host. Para apenas pausar e retomar preservando o container,
+> use `stop` e `start` com o mesmo arquivo Compose.
+>
+> A DAG executa localmente e salva `.pkl`; não dispara ECS, não envia ao S3
+> e não exporta ONNX automaticamente.

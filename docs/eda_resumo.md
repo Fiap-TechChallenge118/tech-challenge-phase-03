@@ -18,7 +18,13 @@
 | Textos duplicados | **3.211** (22,2% do total) |
 | Linhas completamente duplicadas | **0** |
 
-Os 3.211 textos duplicados são cópias exatas dentro da mesma classe (sem ambiguidade de rótulo). São mantidos no treino — o modelo aprende a distribuição real do corpus.
+Revisão dos CSVs oficiais em 14/09/2026: há **2.929 textos distintos com mais
+de um rótulo**, nenhuma duplicata da linha inteira e **988 textos em comum
+entre treino e teste oficiais**. As repetições foram mantidas para reproduzir
+o protocolo existente. Estratificação preserva proporções de classes, mas não
+impede essa sobreposição; as métricas não medem exclusivamente generalização
+para textos inéditos. Uma avaliação adicional deve agrupar por texto e definir
+como tratar os múltiplos rótulos.
 
 ---
 
@@ -138,8 +144,8 @@ O mapeamento é baseado no **nível de risco clínico típico** de cada condiç�
 | Conclusão | Ação adotada |
 |---|---|
 | Dataset desbalanceado (razão ~3,2×) | `class_weight='balanced'` no `LogisticRegression` |
-| Textos com comprimento variável (170–3.999 chars) | `TfidfVectorizer` com `sublinear_tf=True` mitiga dominância de textos longos |
+| Textos com comprimento variável (170–3.999 chars) | TF-IDF com `sublinear_tf=False` e token_pattern explícito para paridade ONNX (configuração atual) |
 | Nenhum texto fora do limite da API (5.000 chars) | Nenhum filtro de tamanho necessário no pré-processamento |
-| 22% de textos duplicados (mesma classe) | Mantidos no treino; split estratificado evita vazamento treino/teste |
+| 22% de repetições de texto; 2.929 textos com múltiplos rótulos | Mantidos no protocolo oficial; avaliação por grupos de texto permanece melhoria pendente |
 | Textos em inglês com vocabulário médico técnico | `ngram_range=(1,2)` captura termos compostos relevantes |
 | Split treino/teste já estratificado | `train_test_split(stratify=y)` mantém a proporção em validações internas |

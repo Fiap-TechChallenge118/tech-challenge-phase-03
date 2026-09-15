@@ -6,7 +6,16 @@
 
 ## Visão Geral
 
-<!-- Preencher na ETAPA 11: o que o sistema faz, quem usa, visão de alto nível. -->
+Projeto acadêmico de inferência NLP: recebe um texto médico em inglês, prediz
+uma de cinco condições e aplica um mapeamento definido pelo projeto para
+`normal`, `atenção` ou `urgente`. A confiança retornada é a probabilidade da
+condição predita, não uma probabilidade calibrada de urgência.
+
+A API usa ONNX Runtime no ECS/Fargate, com artefato no S3. O GitHub Actions
+valida e publica a imagem; o deploy é aplicado via Terraform. Airflow executa
+o retreino local e Docker Compose disponibiliza Prometheus/Grafana.
+
+Estado e pendências para submissão: [auditoria de entrega](docs/status-entrega.md).
 
 ## Decisão Arquitetural
 
@@ -36,26 +45,29 @@ Amazon S3  (artefatos de modelo: model.onnx / model.pkl)
 | Critério | Lambda | EC2 | ECS Fargate Service ✅ |
 |---|---|---|---|
 | Cold start com modelo em memória | Alto (recarrega a cada invocação fria) | Baixo | Baixo (container persistente) |
-| Escalabilidade horizontal | Automática, mas limitada pelo cold start | Manual | Automática via desired_count |
+| Escalabilidade horizontal | Gerenciada pelo serviço | Requer configuração | Ajustável via desired_count; sem autoscaling configurado nesta entrega |
 | Custo de operação contínua | Barato se ocioso | Caro (instância sempre ligada) | Proporcional ao uso |
 | Scrape Prometheus (`/metrics`) | Incompatível (sem IP fixo por invocação) | Possível | Nativo (target estável) |
 | Sem gerência de servidor | Sim | Não | Sim |
 
-O container **baixa o artefato do S3 no startup** — o modelo não fica embutido na imagem Docker. Isso permite que um retreino (ECS Fargate Task) atualize o `model.onnx` no S3 sem rebuild da imagem.
+O container **baixa o artefato do S3 no startup** — o modelo não fica embutido na imagem Docker. O artefato pode ser atualizado sem rebuild da imagem; a versão de produção usa uma chave S3 específica da release e exige atualização/reinício do serviço para carregar outro modelo.
 
-### Pipeline de Treino (ECS Fargate Task)
+### Pipeline de Treino (Airflow local)
 
-O retreino é um processo **batch sob demanda**, orquestrado por uma DAG do Airflow:
+O retreino entregue roda em Airflow standalone via Docker Compose:
 
-```
-Airflow DAG  →  ECS Fargate Task  (container efêmero, mesmo CMD override)
-                    │  lê dataset de  s3://bucket/data/raw/
-                    │  treina pipeline TF-IDF + LogisticRegression
-                    ▼
-                s3://bucket/models/model.onnx  (atualizado)
+```text
+Airflow: ingest → train → save
+         CSVs     CLI     .pkl + métricas + versões locais
 ```
 
-A mesma imagem Docker serve inferência (ECS Service, `CMD uvicorn`) e treino (ECS Task, `CMD python src/train.py`), reduzindo superfície de manutenção.
+A DAG valida os dados, executa `src/train.py` e versiona os arquivos em
+`models/`. Instruções e captura: [execução Airflow](docs/dag_execucao.md).
+A exportação ONNX é um passo separado, validado antes de publicar no S3.
+
+A infraestrutura também fornece uma Task Definition de treino com a mesma
+imagem da API. A integração da DAG com ECS e o download/upload S3 ainda não
+estão implementados; essa é uma extensão do plano interno.
 
 ### Variáveis de Ambiente
 
@@ -79,9 +91,9 @@ urgência (`normal` / `atenção` / `urgente`).
 |------------|---------|
 | Dataset | [Medical Abstracts TC Corpus](https://www.kaggle.com/datasets/saharalaa/medical-abstracts-tc-corpus) (Kaggle) |
 | Pipeline | `preprocess → TF-IDF → LogisticRegression` (scikit-learn, CPU) |
-| Artefato | `models/model.pkl` (pipeline completo, consumível pela API) |
+| Artefatos | `.pkl` para treino/sklearn; `.onnx` para inferência padrão |
 
-### Resultados (split de teste, 2.310 laudos)
+### Comparação histórica de classificadores (split de teste, 2.310 laudos)
 
 | Classificador | Acurácia | Macro-F1 |
 |---------------|---------:|---------:|
@@ -89,34 +101,40 @@ urgência (`normal` / `atenção` / `urgente`).
 | LinearSVC (C=0.1, balanced) | 0.595 | 0.594 |
 | **LogisticRegression (C=0.3, balanced)** | **0.607** | **0.609** |
 
-Métricas completas (F1 por classe, holdout oficial): `docs/metricas_modelo.txt` e
-`models/metrics.json`.
+Após o retreino compatível com ONNX, o modelo atual atingiu acurácia **0,6084**
+e macro-F1 **0,6110** no holdout oficial de 2.888 textos. Métricas atuais:
+[`models/metrics.json`](models/metrics.json). O relatório
+`docs/metricas_modelo.txt` preserva resultados anteriores.
+
+Há textos repetidos com rótulos diferentes e sobreposição de textos entre os
+splits oficiais; veja os limites de avaliação na [EDA](docs/eda_resumo.md).
 
 ### Treinar
 
 ```bash
-pip install -e ".[dev]"
+pip install -c constraints.txt -e ".[dev]"
 python scripts/download_data.py            # baixa o dataset → data/raw/
 python src/train.py \
     --data data/raw/medical_tc_train.csv \
     --test-data data/raw/medical_tc_test.csv \
     --model models/model.pkl \
-    --classifier all --test-size 0.2 --random-state 42
+    --classifier logistic --test-size 0.2 --random-state 42
 ```
 
 ### Inferência ONNX na API
 
 A API usa ONNX por padrão, com o mesmo pré-processamento Python do treino.
-Gere o artefato antes de iniciar o serviço local:
+Treine com o código atual, conforme a seção anterior, e gere o artefato antes de iniciar o serviço local. O `.pkl` antigo não tem a mesma paridade:
 
 ```bash
-python -m src.export_onnx --model models/model.pkl --output models/model.onnx --data ""
+python -m src.export_onnx --model models/model.pkl --output models/model.onnx \
+    --data data/raw/medical_tc_test.csv --n 2888
 docker compose up --build -d
 ```
 
-Com o dataset disponível, use `--data data/raw/medical_tc_test.csv --n 200`
-para verificar a paridade durante a exportação. Em produção, disponibilize
-`models/model.onnx` no bucket configurado em `MODEL_BUCKET` antes do deploy.
+A exportação deve terminar sem divergências. Em produção, disponibilize o
+ONNX validado no bucket configurado em `MODEL_BUCKET` e configure `MODEL_KEY`
+com a chave publicada antes do deploy.
 O artefato é gerado localmente e não é versionado no Git.
 
 Para usar sklearn explicitamente, configure `USE_ONNX=false` e
@@ -149,26 +167,32 @@ print(label)  # 1..5 → condição médica
 ### Desenvolvimento local
 
 ```bash
-pip install -e ".[dev]"
-cp .env.example .env   # preencha MODEL_BUCKET e AWS_REGION se quiser o modelo real
-uvicorn app.main:app --reload
+pip install -c constraints.txt -e ".[dev]"
+cp .env.example .env
+# Execute antes as seções Treinar e Inferência ONNX na API.
+uvicorn app.main:app --reload --env-file .env
 # → http://localhost:8000/docs
 ```
 
-> Sem `MODEL_BUCKET` configurado, a API inicia em modo **mock** e responde normalmente.
+> Sem `MODEL_BUCKET`, a API procura o ONNX local. Se o artefato não existir ou
+> falhar ao carregar, ativa **mock**. Confirme `/health` com `model=loaded`
+> antes da demonstração; HTTP 200 sozinho não comprova inferência real.
 
 ### Docker isolado
 
 ```bash
 docker build -t triagem-api .
-docker run -p 8000:8000 --env-file .env triagem-api
+docker run --rm -p 127.0.0.1:8000:8000 \
+    -e USE_ONNX=true -e MODEL_PATH=/app/models/model.onnx \
+    -v "$PWD/models:/app/models:ro" triagem-api
 # → http://localhost:8000/docs
 ```
 
 ### Stack completa (Docker Compose)
 
 ```bash
-docker compose up
+docker compose up --build -d
+# Requer models/model.onnx gerado anteriormente.
 # API     → http://localhost:8000
 # Prometheus → http://localhost:9090
 # Grafana → http://localhost:3000  (admin / admin)
@@ -179,7 +203,7 @@ docker compose up
 ### Pré-requisito
 
 ```bash
-pip install -e ".[dev]"
+pip install -c constraints.txt -e ".[dev]"
 ```
 
 ### Lint (ruff)
@@ -192,29 +216,15 @@ Saída esperada: `All checks passed!`
 
 ### Testes automatizados (pytest)
 
-Os testes **não dependem de modelo real, S3 ou arquivo local** — o `model_loader`
-é substituído por um mock via `monkeypatch` em `tests/conftest.py`.
+Os testes de contrato usam mock; um teste adicional treina/exporta um modelo
+pequeno e verifica o runtime ONNX real. Nenhum teste exige S3 ou o artefato de
+produção.
 
 ```bash
-pytest -v
+pytest -v tests/ scripts/test_benchmark.py scripts/test_validate_model.py
 ```
 
-Saída esperada:
-
-```
-tests/test_health.py::test_health_returns_200                    PASSED
-tests/test_health.py::test_health_body_has_status_key            PASSED
-tests/test_health.py::test_health_body_has_model_key             PASSED
-tests/test_predict.py::test_predict_valid_text_returns_200       PASSED
-tests/test_predict.py::test_predict_valid_text_returns_valid_class PASSED
-tests/test_predict.py::test_predict_empty_text_returns_422       PASSED
-tests/test_predict.py::test_predict_blank_text_returns_422       PASSED
-tests/test_predict.py::test_predict_missing_field_returns_422    PASSED
-tests/test_predict.py::test_predict_text_too_long_returns_422    PASSED
-tests/test_predict.py::test_predict_response_fields_present      PASSED
-
-10 passed in ~0.1s
-```
+Resultado validado no commit `d447ec1`: **17 testes passaram**.
 
 ### Cobertura dos testes
 
@@ -267,7 +277,13 @@ Baseline do modelo sklearn real em 12/09/2026:
 
 As medições incluem HTTP, com 20 chamadas de aquecimento e conexão persistente.
 Condições e dados brutos: [baseline](docs/latencia_baseline.md).
-O comparativo com o modelo otimizado depende da etapa 9 (Dev C).
+O [comparativo controlado sklearn/ONNX](docs/latencia_comparativo.md), na mesma
+máquina Windows/WSL2, registrou p95 de **3,119 → 2,353 ms (−24,6%)** e
+throughput de **411,8 → 524,6 req/s (+27,4%)**. Não comparar valores absolutos
+entre máquinas como se fossem ganho do runtime.
+
+Na [validação ONNX em produção](docs/deploy_onnx.md), 100 chamadas tiveram p95
+**197,117 ms**, incluindo a rede até a AWS.
 
 ## CI/CD
 
@@ -276,7 +292,7 @@ Terraform/Compose e build AMD64 com smoke HTTP. Push/execução manual na
 `develop` também publica a imagem testada no ECR por OIDC, com tag SHA imutável.
 A publicação não atualiza automaticamente o serviço ECS.
 
-[Execução validada: cinco jobs verdes](https://github.com/Fiap-TechChallenge118/tech-challenge-phase-03/actions/runs/34726456994).
+[Execução validada: cinco jobs verdes](https://github.com/Fiap-TechChallenge118/tech-challenge-phase-03/actions/runs/34908089669).
 [Captura para a apresentação](docs/ci_execucao.png).
 Variáveis e procedimento de publicação: [guia de operação](docs/dev-b-operacao.md).
 
@@ -288,10 +304,9 @@ O dashboard em [localhost:3000/d/triagem](http://localhost:3000/d/triagem)
 mostra total de predições, p95 de inferência em ms, erros de inferência por
 segundo e distribuição por classe. O contador de erros não inclui HTTP 422.
 
-Para gerar dados com o modelo local em `models/model.pkl`:
+Após treinar/exportar o ONNX e iniciar a stack local, gere tráfego:
 
 ```bash
-python scripts/validate_model.py models/model.pkl
 curl -fsS http://localhost:8000/health
 python scripts/benchmark.py --n 200
 ```
@@ -304,8 +319,10 @@ para atualização dos painéis. JSON: [monitoring/dashboard.json](monitoring/da
 ## Deploy em Produção
 
 Demo: [Swagger no ALB](http://tc03-triagem-1006816505.us-east-1.elb.amazonaws.com/docs).
-Inferência em ECS Fargate, com `models/model.pkl` no S3 e `USE_ONNX=false`.
-O endpoint `/health` foi revalidado com `model=loaded` em 13/09/2026.
+Inferência em ECS Fargate com `USE_ONNX=true` e
+`MODEL_KEY=models/releases/d447ec1/model.onnx`. Deploy de 14/09/2026 validado:
+rollout concluído, `/health` com `model=loaded`, predições reais e plan sem
+alterações. [Versão, métricas e rollback](docs/deploy_onnx.md).
 O monitoramento Prometheus/Grafana desta entrega é local.
 
 Na instalação existente, com credenciais AWS válidas, `infra/backend.hcl` e
@@ -326,12 +343,13 @@ Parâmetros de integração do treino: [outputs AWS](docs/aws_outputs.json).
 
 Janela da demo até **26/09/2026**. Para encerrar o serviço, definir
 `enable_inference=false`, revisar plan e aplicar. Tags de expiração não desligam
-recursos; ECR/S3 permanecem armazenados. Airflow e exportação ONNX ainda dependem
-do Dev C; a Task Definition de treino foi validada apenas com a CLI `--help`.
+recursos; ECR/S3 permanecem armazenados. A DAG local e a exportação ONNX estão
+entregues; a integração do retreino ECS/S3 permanece pendente. A Task Definition
+de treino foi validada historicamente apenas com a CLI `--help`.
 
 ## Vídeo STAR
 
-<!-- Preencher na ETAPA 11: link do vídeo (≤ 5 min). -->
+Pendente: publicar vídeo de até 5 minutos pelo método STAR e inserir aqui o link acessível sem autenticação.
 
 ## Time
 

@@ -1,213 +1,60 @@
 # TODO — Dev A: Alexandre Araújo
 
-**Eixo de responsabilidade:** Fundação do repositório, API, Testes e Documentação
-**Etapas cobertas:** ETAPA 0 → ETAPA 3 → ETAPA 4 → ETAPA 11 (+ apoio na instrumentação da ETAPA 8)
-**Peso na nota (PDF):** Documentação 15% + Vídeo STAR 15% = **30%**
+Revisão de 14/09/2026. Responsável por fundação, API, testes, README e vídeo.
+Fonte: [requisitos oficiais](../content/tech-challenge.md).
+Evidências: [auditoria](../../docs/status-entrega.md).
 
-> Arquitetura do projeto: **100% ECS + Fargate**. Inferência = ECS Fargate Service (FastAPI persistente) atrás de ALB, baixando `model.onnx` do S3 no startup. Treino = ECS Fargate Task. Monitoramento = Prometheus + Grafana. Sem Lambda, sem API Gateway.
-> Fonte de verdade dos requisitos: `.docs/content/tech-challenge.md`. Plano de execução: `.docs/content/plan.md`.
+## ETAPA 0 — Fundação
 
----
+- [x] Repositório público e estrutura de código, dados, modelos, testes e infraestrutura.
+- [x] `pyproject.toml`, `.gitignore`, `.dockerignore`, `.env.example`, README e CONTRIBUTING.
+- [x] Dependências de runtime/dev fixadas e constraints ONNX disponíveis.
+- [x] Histórico de commits semânticos.
+- [ ] Confirmar proteção e permissões na branch de entrega; o padrão remoto atual é `master`, e não `main`.
+- [ ] Consolidar processo de contribuição/PR com a decisão de trabalhar em `develop`.
 
-## ETAPA 0 — Fundação do repositório
+Convites, comunicações internas e revisão de PR não foram inferidos da existência
+do código; confirmar administrativamente quando necessário.
 
-**Objetivo:** repositório pronto para os outros devs começarem em paralelo.
+## ETAPA 3 — API
 
-**Entregável:** repositório com estrutura de pastas, dependências, padrões e README esqueleto.
+- [x] `PredictRequest`: texto não vazio, até 5.000 caracteres.
+- [x] `PredictResponse`: classe, confiança entre 0 e 1, tempo em ms.
+- [x] Startup com download S3 ou artefato local; cache em memória.
+- [x] ONNX como padrão; sklearn opcional; fallback mock identificado no health.
+- [x] Pré-processamento e mapeamento das cinco condições para três urgências nos dois runtimes.
+- [x] `/predict`, `/health`, `/metrics` e Swagger funcionando.
+- [x] Logs de carregamento e inferência; métricas Counter/Histogram.
+- [x] Decisão real-time + ECS/ALB no README.
+- [x] API ONNX real validada no Fargate; cinco predições equivalentes ao sklearn.
 
-**Dependências:** nenhuma. Bloqueia ETAPA 1 (Dev C) e ETAPA 3 (a própria API do Dev A).
+## ETAPA 4 — Testes e lint
 
-**Branch:** `etapa-0-fundacao-repo`
+- [x] Ruff sem erros e pytest aprovado localmente e no CI.
+- [x] Testes de health, resposta válida, campos obrigatórios, texto vazio/branco e limite de tamanho.
+- [x] Fixture mock independente de S3 e do artefato de produção.
+- [x] Teste adicional com ONNX real gerado durante o teste; valida classe/confiança e runtime padrão.
+- [x] Suíte atual: 11 testes em `tests/`, mais 6 nos scripts (17 no CI).
+- [x] Comandos de instalação, lint e testes documentados.
 
----
+## ETAPA 11 — Consolidação e vídeo
 
-### Checklist
+- [x] README com visão geral, arquitetura real, execução, CI, monitoramento e URL de produção.
+- [x] Atualização do estado ONNX e comparação de latência; links das evidências.
+- [x] Distinção entre DAG local entregue e integração futura ECS/S3.
+- [ ] Reproduzir todos os comandos em clone limpo (incluindo obtenção dos dados/modelo).
+- [ ] Revisar todos os links públicos sem autenticação.
+- [ ] Confirmar branch final com o time; preparar CI para ela caso seja `master`.
+- [ ] Gravar Situation: problema e importância da resposta rápida (~45 s).
+- [ ] Gravar Task: requisitos de API, latência, CI/CD, monitoramento e retreino (~45 s).
+- [ ] Gravar Action: arquitetura, Actions, DAG, Grafana e otimização (~2 min).
+- [ ] Gravar Result: comparativo de latência, demo e lições (~45 s).
+- [ ] Publicar vídeo de até 5 minutos; testar acesso e inserir link no README.
+- [ ] Concluir revisão/integração final com o time e confirmar submissão no portal.
 
-#### Repositório e estrutura
-- [x] Criar repositório público; convidar os 3 devs com permissão `Write`
-- [x] Estrutura de pastas (já criada) com `.gitkeep`: `app/`, `src/`, `dags/`, `tests/`, `data/raw/`, `data/processed/`, `models/`, `monitoring/grafana/provisioning/`, `scripts/`, `docs/`, `notebooks/`, `.github/workflows/`, `infra/modules/{networking,s3,ecr,ecs,alb,iam,monitoring}`
+**Etapa 11 ainda aberta.** Não foi encontrado link de vídeo no conteúdo revisado.
 
-#### Arquivos de configuração raiz
-- [x] `.gitignore`: `__pycache__/`, `*.pyc`, `.env`, `*.pkl`, `*.onnx`, `data/raw/*`, `data/processed/*` (com `!.gitkeep`), `.venv/`, `dist/`, `*.egg-info/`, `.terraform/`, `*.tfstate*`
-- [x] `.dockerignore`: `.git`, `.venv`, `__pycache__`, `*.pyc`, `data/`, `tests/`, `.env`, `infra/`, `notebooks/`
-- [x] `.env.example`: `MODEL_BUCKET=`, `MODEL_KEY=models/model.onnx`, `USE_ONNX=true`, `AWS_REGION=`, `LOG_LEVEL=INFO`
+## Apoio à ETAPA 8
 
-#### Dependências
-- [x] `pyproject.toml` com todas as dependências fixadas:
-  - runtime (`[project].dependencies`): `fastapi`, `uvicorn[standard]`, `scikit-learn`, `joblib`, `prometheus-client`, `onnxruntime`, `skl2onnx`, `numpy`, `pandas`, `boto3`
-  - dev (`[project.optional-dependencies].dev`): `pytest`, `httpx`, `ruff`
-- [x] Instalação documentada: `pip install -e ".[dev]"`
-
-#### Padrões e README
-- [x] `CONTRIBUTING.md`: Conventional Commits (`feat`/`fix`/`docs`/`chore`/`test`/`refactor`), branch `etapa-N-descricao`, PR obrigatório em `main`
-- [x] Branch protection em `main`: require PR + status checks
-- [x] README esqueleto: Visão Geral, Decisão Arquitetural, Pré-requisitos, Como Executar (local/Docker/Compose), Resultados de Latência, CI/CD, Monitoramento, Deploy em Produção, Vídeo STAR, Time
-- [x] Commit inicial: `chore: initial repo structure and standards`; notificar Dev B e Dev C
-
-### ✅ Definition of Done — ETAPA 0
-- Repositório público acessível pelos 3 membros
-- Estrutura completa rastreada pelo Git; `.gitignore`/`.dockerignore`/`.env.example` presentes
-- `pyproject.toml` com dependências fixadas (runtime + dev); `CONTRIBUTING.md` + README esqueleto
-- Dev B e Dev C notificados
-
----
----
-
-## ETAPA 3 — API FastAPI (serviço de inferência)
-
-**Objetivo:** API REST de triagem que recebe o texto do laudo e devolve a classificação de urgência. É o serviço que roda como ECS Fargate Service em produção e como container local na stack de monitoramento.
-
-**Entregável:** `app/main.py` funcional + seção "Decisão Arquitetural" no `README.md`.
-
-**Dependências:**
-- Requer: ETAPA 0 (estrutura, `pyproject.toml`) e ETAPA 2 (`model.onnx`/`model.pkl` no S3 — até estar disponível, usar mock)
-- Bloqueia: ETAPA 4 (testes) e ETAPA 5 (Dockerfile)
-
-**Branch:** `etapa-3-api-fastapi`
-
----
-
-### Checklist
-
-#### Schemas Pydantic (`app/schemas.py`)
-- [x] `PredictRequest` com `texto: str` (validar não vazio, `max_length=5000`)
-- [x] `PredictResponse` com `classe` (`normal`/`atenção`/`urgente`), `confianca: float` (0.0–1.0), `tempo_ms: float`
-
-#### Carregamento do modelo (`app/model_loader.py`)
-- [x] Baixar o artefato do **S3 no startup** (bucket/key via variável de ambiente `MODEL_BUCKET`/`MODEL_KEY`)
-- [x] Cachear localmente e carregar **uma única vez** no startup (não a cada request)
-- [x] Suportar `USE_ONNX` (true → `onnxruntime`; false → `.pkl` via joblib)
-- [x] Fallback: se o S3 não estiver acessível ou o modelo não existir, usar mock que responde `{"classe": "normal", "confianca": 1.0}`
-- [x] Logar (com `logging`) o modo ativo: modelo real (onnx/pkl) ou mock
-
-#### Endpoints (`app/main.py`)
-- [x] `app = FastAPI(title="Triagem Médica API", version="1.0.0")`
-- [x] `lifespan` chama o `model_loader` no startup (padrão moderno — substitui `@app.on_event`)
-- [x] `POST /predict`: recebe `PredictRequest`, mede tempo com `time.perf_counter()`, retorna `PredictResponse`; `HTTPException(422)` se texto vazio após strip
-- [x] `GET /health`: retorna `{"status": "ok", "model": "loaded"|"mock"}`, HTTP 200
-- [x] Logging estruturado com `logging.getLogger(__name__)` — **sem `print()`**
-- [x] Exemplo de request no schema para o Swagger (`/docs`)
-
-#### Decisão arquitetural no README
-- [x] Análise **batch vs real-time**: por que triagem hospitalar exige resposta síncrona (real-time)
-- [x] Justificar **ECS Fargate + ALB** para inferência e **ECS Fargate Task** para treino (custo, container persistente, scrape do Prometheus, escalabilidade)
-- [x] Diagrama textual: `Client → ALB → ECS Fargate Service → model.onnx (do S3)`
-
-#### Validação local
-- [x] `uvicorn app.main:app --reload` sobe sem erro
-- [x] `/docs` mostra os schemas; testar `POST /predict` e `GET /health`
-- [x] Confirmar ausência de `print()` em `app/` — apenas logs estruturados
-- [x] Commit: `feat(api): add /predict and /health endpoints`
-
----
-
-### ✅ Definition of Done — ETAPA 3
-- `POST /predict` retorna `{classe, confianca, tempo_ms}` para laudo válido ✅
-- `GET /health` retorna 200 ✅
-- Schemas rejeitam texto vazio com 422 ✅
-- Modelo carregado do S3 no startup (com fallback mock) — sem `print()` ✅
-- Seção "Decisão Arquitetural" no README (real-time + ECS/ALB justificados) ✅
-- PR aberto e revisado ⬜
-
----
----
-
-## ETAPA 4 — Testes automatizados e qualidade de código
-
-**Objetivo:** suíte pytest + lint funcionando localmente, para a ETAPA 6 (CI/CD) apenas automatizar.
-
-**Entregável:** `tests/` passando + `ruff` configurado no `pyproject.toml`.
-
-**Dependências:** Requer ETAPA 3. Bloqueia ETAPA 6.
-
-**Branch:** `etapa-4-testes-lint`
-
----
-
-### Checklist
-
-#### Lint e pytest (`pyproject.toml`)
-- [x] `[tool.ruff]` com `line-length = 88`, `select = ["E","F","W","I"]`, `exclude = ["dags/","data/"]`
-- [x] `ruff check app/ src/` → `All checks passed.` *(8 erros E501 pendentes em `app/main.py`, `app/schemas.py`, `src/train.py`)*
-- [x] `[tool.pytest.ini_options]` com `testpaths = ["tests"]`
-- [x] Criar `tests/__init__.py`
-
-#### Fixture mock (`tests/conftest.py`)
-- [x] Fixture `client` com `TestClient(app)` e override do `model_loader` por mock que retorna `("normal", 0.95)`
-- [x] **Testes não dependem do modelo real do S3 nem de `.pkl` local**
-
-#### Testes (`tests/test_health.py`, `tests/test_predict.py`)
-- [x] `test_health_returns_200` + `test_health_body_has_status_key`
-- [x] `test_predict_valid_text_returns_valid_class` (classe ∈ 3 categorias, confianca 0–1, tempo_ms ≥ 0)
-- [x] `test_predict_empty_text_returns_422`
-- [x] `test_predict_blank_text_returns_422` (só espaços)
-- [x] `test_predict_missing_field_returns_422`
-- [x] `test_predict_text_too_long_returns_422` (6000 chars)
-
-#### Validação e finalização
-- [x] `pytest -v` 100% (mínimo 7 testes) + `ruff check app/ src/` zero erros
-- [x] Anotar comandos para a ETAPA 6: `ruff check app/ src/` e `pytest -v`
-
----
-
-### ✅ Definition of Done — ETAPA 4
-- `pytest -v` 100% (≥7 testes), `ruff check` zero erros ⬜
-- Nenhum teste usa modelo real — só fixture mock ⬜
-- Comandos de lint/teste documentados para o Dev B ⬜
-- PR aberto e revisado ⬜
-
----
----
-
-## ETAPA 11 — Consolidação final: README e vídeo STAR
-
-**Objetivo:** README completo e coerente + vídeo STAR ≤ 5 min.
-
-**Entregável:** `README.md` final + link do vídeo funcional.
-
-**Dependências:** Requer todas as etapas anteriores (especialmente ETAPA 9 para latência e ETAPA 10 para a URL do ALB). Bloqueia a submissão.
-
-**Branch:** `etapa-11-readme-video`
-
----
-
-### Checklist
-
-#### README
-- [ ] Seções: Decisão Arquitetural (ECS/ALB, atualizada com o deploy real), Como Executar, Resultados de Latência (tabela da ETAPA 9), CI/CD (badge + link Actions), Monitoramento (print Grafana), Deploy em Produção (URL do ALB da ETAPA 10 + passo a passo), Vídeo
-- [x] Três modos de execução documentados:
-  - Local: `pip install -e ".[dev]" && uvicorn app.main:app --reload`
-  - Docker isolado: `docker build -t triagem-api . && docker run -p 8000:8000 triagem-api`
-  - Stack completa: `docker compose up`
-- [ ] Todos os comandos testados copiando e colando *(Dockerfile e docker-compose.yml ainda não existem)*
-
-#### Roteiro STAR
-- [ ] **S (~45s):** problema clínico — triagem automática de laudos, volume alto, risco de atraso
-- [ ] **T (~45s):** requisitos — latência, CI/CD, monitoramento Grafana, retreino Airflow
-- [ ] **A (~2min):** arquitetura ECS/Fargate, CI/CD verde, `docker compose up` com Grafana, DAG Airflow verde, comparativo sklearn vs ONNX
-- [ ] **R (~45s):** números — latência p95, ganho ONNX, URL do ALB funcionando, lições
-
-#### Gravação
-- [ ] Vídeo ≤ 5 min, publicado, link testado em aba anônima, inserido no README
-- [ ] Commit: `docs: finalize README and add video link`; PR → `main`
-
----
-
-### ✅ Definition of Done — ETAPA 11
-- README com todas as seções preenchidas, comandos testados, sem links quebrados ⬜
-- Vídeo ≤ 5 min (STAR), link acessível em aba anônima ⬜
-- Repositório público com merges concluídos ⬜
-
----
-
-## Apoio — Instrumentação da ETAPA 8 (com Dev B)
-- [x] Adicionar `prometheus_client` em `app/main.py`: Counter de requisições (label `classe_predita`), Histogram de latência, Counter de erros
-- [x] Expor `/metrics` no endpoint dedicado (formato Prometheus)
-- [ ] Confirmar que `curl localhost:8000/metrics` retorna formato Prometheus antes de Dev B configurar o scrape *(funciona — pendente apenas confirmação formal com Dev B)*
-
----
-
-## ⚠️ Pontos em aberto — Dev A
-- [x] Limite de tamanho do texto: **5.000 caracteres** — definido em `app/schemas.py`
-- [ ] Plataforma do vídeo: confirmar se YouTube é aceito
-- [x] Variáveis de ambiente do S3 (`MODEL_BUCKET`/`MODEL_KEY`/`MODEL_PATH`): definidas e documentadas no `.env.example`
+- [x] `/metrics` exposto; contagem de predições, latência e erros de inferência.
+- [x] Prometheus local com target UP e dashboard provisionado com quatro painéis.
