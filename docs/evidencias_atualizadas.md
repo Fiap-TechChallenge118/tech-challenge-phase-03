@@ -41,6 +41,6 @@ enquanto o benchmark mede a duração HTTP. Os números não são intercambiáve
 
 ## Pendências que permanecem
 
-Vídeo STAR e link público, reprodução completa em clone limpo, consolidação
+Validação de duração/conteúdo e acesso do vídeo já linkado no README, reprodução completa em clone limpo, consolidação
 da branch de submissão e envio no portal. A renovação das evidências conclui
 a execução do notebook e a revalidação local da DAG; não comprova esses outros passos.

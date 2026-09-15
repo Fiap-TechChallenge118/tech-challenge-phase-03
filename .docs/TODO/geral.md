@@ -18,7 +18,8 @@ Histórico dos checklists anteriores permanece no Git.
 - [x] Comparativo de latência sklearn/ONNX nas mesmas condições registrado.
 - [x] ONNX publicado no S3 e servido pelo ECS; [deploy e validação](../../docs/deploy_onnx.md).
 - [x] README revisado para refletir a implementação e as métricas atuais.
-- [ ] Vídeo STAR ≤5 min publicado, acessível sem login e linkado no README.
+- [x] Link da apresentação recebido e destacado no README.
+- [ ] Validar duração ≤5 min, método STAR e acesso sem login.
 - [ ] Reprodução final dos comandos a partir de clone limpo.
 
 ## Decisões confirmadas
@@ -55,7 +56,7 @@ Histórico dos checklists anteriores permanece no Git.
 | 8 — Monitoramento | Dev B | Entregue; stack existente revalidada |
 | 9 — ONNX | Dev C | Entregue; paridade completa e deploy validados |
 | 10 — AWS | Dev B | Entregue; ONNX em produção |
-| 11 — README/vídeo | Dev A | Documentação revisada; vídeo e reprodução final pendentes |
+| 11 — README/vídeo | Dev A | README reorganizado e vídeo linkado; validação do vídeo e reprodução final pendentes |
 
 ## Submissão
 
@@ -67,7 +68,8 @@ Histórico dos checklists anteriores permanece no Git.
 - [ ] Se integrar em `master`, ajustar CI/checks para essa branch antes do merge.
 - [ ] Validar links e comandos em clone limpo; comprovar modelo carregado, não apenas HTTP 200 em mock.
 - [ ] Confirmar data limite e canal de submissão com a instituição.
-- [ ] Inserir link público do vídeo e verificar duração/método STAR.
+- [x] Inserir link da apresentação no README.
+- [ ] Verificar duração/método STAR e acesso público.
 - [ ] Submeter repositório e vídeo no portal e registrar recebimento.
 
 Detalhes por responsável: [Dev A](dev-a-alexandre.md),

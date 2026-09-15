@@ -55,7 +55,7 @@ Fonte: [requisitos oficiais](../content/tech-challenge.md).
 
 - [x] ONNX/paridade entregues; migração da inferência concluída.
 - [ ] Dev C: extensão da DAG para ECS/S3 e promoção do ONNX após treino (meta interna adicional).
-- [ ] Dev A/time: vídeo, clone limpo, branch final e submissão.
+- [ ] Dev A/time: validar vídeo já linkado, clone limpo, branch final e submissão.
 - [x] Procedimento de encerramento documentado: `enable_inference=false`, plan/apply; preserva buckets/ECR.
 - [ ] Definir responsável nominal e executar encerramento após a demo, até 26/09/2026.
 

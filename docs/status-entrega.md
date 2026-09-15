@@ -7,7 +7,7 @@ Revisão do código `d447ec1`, TODOs, CI, artefatos, dados oficiais e ambiente A
 
 A base técnica obrigatória está implementada: API Docker, CI, DAG local,
 monitoramento e otimização ONNX com comparativo. **A entrega ainda não está
-completa:** falta o vídeo STAR com link acessível, a consolidação da branch de
+completa:** resta validar duração/conteúdo e acesso do vídeo recebido, a consolidação da branch de
 submissão e a confirmação de envio no portal. A revisão corrigiu descrições
 antigas do README e dos TODOs; os limites de validação estão indicados abaixo.
 
@@ -28,7 +28,7 @@ antigas do README e dos TODOs; os limites de validação estão indicados abaixo
 | Técnica de otimização + modelo otimizado | Atendido | `src/export_onnx.py`; ONNX publicado; paridade 2.888/2.888; [deploy](deploy_onnx.md) |
 | Comparativo original vs otimizado | Atendido por evidência registrada | `docs/latencia_comparativo.md`: mesma máquina, p95 −24,6%; benchmark controlado não reexecutado nesta auditoria |
 | README com execução clara | Revisado; aceite de clone limpo pendente | Corrigidos modo local, constraints, ONNX, treino local e estado do deploy |
-| Vídeo ≤5 minutos, método STAR, link | Pendente obrigatório | Não há link no README nem nos documentos revisados |
+| Vídeo ≤5 minutos, método STAR, link | Link recebido e incluído | [Apresentação](https://youtu.be/JenHbyULiw8?si=Y__uU2oqJ8fXVZff); duração, conteúdo e acesso sem login ainda não auditados |
 
 Os pesos de avaliação são 20% modelo, 15% CI/CD, 15% Airflow, 20%
 monitoramento, 15% README e 15% vídeo. Esta auditoria não estima nota nem
@@ -38,8 +38,8 @@ considera evidência histórica equivalente a uma nova execução.
 
 ### Antes de submeter
 
-1. **Dev A:** gravar/publicar o vídeo STAR, inserir o link e verificar duração
-   e acesso sem autenticação. Demonstrar CI, DAG, dashboard e comparativo.
+1. **Dev A:** validar duração, conteúdo STAR e acesso sem autenticação do vídeo
+   recebido e destacado no README. Conferir demonstração de CI, DAG, dashboard e comparativo.
 2. **Time:** definir a branch/link final. O repositório é público, mas a branch
    padrão é `master`; `develop` estava 29 commits à frente na revisão de
    `d447ec1`. Não existe `main` remota. O CI só valida push/PR para `develop`.

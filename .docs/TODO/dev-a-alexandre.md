@@ -45,14 +45,15 @@ do código; confirmar administrativamente quando necessário.
 - [ ] Reproduzir todos os comandos em clone limpo (incluindo obtenção dos dados/modelo).
 - [ ] Revisar todos os links públicos sem autenticação.
 - [ ] Confirmar branch final com o time; preparar CI para ela caso seja `master`.
-- [ ] Gravar Situation: problema e importância da resposta rápida (~45 s).
-- [ ] Gravar Task: requisitos de API, latência, CI/CD, monitoramento e retreino (~45 s).
-- [ ] Gravar Action: arquitetura, Actions, DAG, Grafana e otimização (~2 min).
-- [ ] Gravar Result: comparativo de latência, demo e lições (~45 s).
-- [ ] Publicar vídeo de até 5 minutos; testar acesso e inserir link no README.
+- [ ] Validar no vídeo: Situation: problema e importância da resposta rápida (~45 s).
+- [ ] Validar no vídeo: Task: requisitos de API, latência, CI/CD, monitoramento e retreino (~45 s).
+- [ ] Validar no vídeo: Action: arquitetura, Actions, DAG, Grafana e otimização (~2 min).
+- [ ] Validar no vídeo: Result: comparativo de latência, demo e lições (~45 s).
+- [x] Link da apresentação recebido e inserido em destaque no README.
+- [ ] Conferir duração de até 5 minutos e acesso sem autenticação.
 - [ ] Concluir revisão/integração final com o time e confirmar submissão no portal.
 
-**Etapa 11 ainda aberta.** Não foi encontrado link de vídeo no conteúdo revisado.
+**Etapa 11 ainda aberta para validação final.** O vídeo fornecido pelo time já está linkado no README; duração e conteúdo não foram auditados nesta revisão.
 
 ## Apoio à ETAPA 8
 
